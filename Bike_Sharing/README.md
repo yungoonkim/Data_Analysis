@@ -15,15 +15,19 @@ Bike_Sharing/
 │   ├── songpa_od_flow_summary.csv                # A대여소 ➔ B대여소 이동량, 평균 시간, 평균 거리, 선두께, 선색상 매핑 집계
 │   └── songpa_station_commute_analysis.csv       # 대여소별 출퇴근비율, 여가비율, 제자리반납비율 및 특화 유형 분류
 ├── maps/
-│   └── songpa_bike_od_flow_map.html              # Folium 인터랙티브 OD 이동 흐름 지도 (브라우저에서 바로 열람 가능)
-├── charts/                                       # 고해상도 시각화 차트 이미지 (300 DPI)
+│   ├── songpa_bike_od_flow_map.html              # Folium 인터랙티브 개별 OD 흐름 지도 (AntPath 동적 애니메이션 & 시간대별 레이어)
+│   └── songpa_google_maps_flow.html              # Google Maps JavaScript API 기반 독립형 지도
+├── charts/                                       # 고해상도 시각화 차트 이미지 및 애니메이션 GIF
+│   ├── songpa_bike_hourly_flow_timelapse.gif     # [신규] 24시간 시간대별 따릉이 이동 흐름 타임랩스 애니메이션 (GIF 영상)
 │   ├── monthly_trend_2021_2026.png               # 2021~2026 최근 5개년 송파구 월별 총 대여량 시계열 추이
 │   ├── hourly_weekday_weekend_pattern.png        # 시간대별(0~23시) 평일 vs 주말 이용곡선 (출퇴근 M자 vs 주말 단봉형)
 │   ├── day_of_week_heatmap.png                   # 요일 x 시간대 24x7 통행량 히트맵
 │   └── station_type_classification.png           # 송파구 대여소별 출퇴근 특화 vs 여가 특화 산점도 분류
 ├── scripts/                                      # 자동 수집 및 시각화 파이썬 스크립트
 │   ├── collect_and_process.py                    # 공공데이터 API 자동 수집 및 송파구 필터링 스크립트
-│   ├── generate_map.py                           # Folium 인터랙티브 지도 생성 스크립트
+│   ├── generate_map.py                           # Folium 개별 통행 흐름(AntPath & 시간대별) 인터랙티브 지도 생성 스크립트
+│   ├── generate_hourly_gif.py                    # [신규] 24시간 시간대별 통행 흐름 타임랩스 GIF 생성 스크립트
+│   ├── generate_google_maps_html.py              # 구글맵 JS API 독립형 지도 생성 스크립트
 │   ├── analyze_patterns.py                       # 패턴 분석 및 차트 생성 스크립트
 │   └── create_notebook.py                        # 주피터 노트북 생성 및 자동 실행 스크립트
 ├── seoul_bike_songpa_analysis.ipynb              # [핵심] 단계별 검증 가능한 풀스택 주피터 노트북 (모든 결과 임베딩)
@@ -47,18 +51,21 @@ Bike_Sharing/
 
 ## 🗺️ A대여소 ➔ B대여소 이동량 지도 시각화 방식
 
-사용자 요구사항에 맞추어 **이동량에 따른 시각적 위계(Visual Hierarchy)**를 구현하였습니다.
-- **선 두께 (PolyLine weight)**:
-  - 10건 미만 (최소): `weight = 1.5` (얇은 선)
-  - 10 ~ 19건 (적음): `weight = 2.5`
-  - 20 ~ 49건 (보통): `weight = 3.5`
-  - 50 ~ 99건 (많음): `weight = 4.5`
-  - 100건 이상 (최다): `weight = 6.5 ~ 8.0` (가장 두꺼운 선)
-- **선 색상 (Color Palette)**:
-  - 파랑(`#4575b4`) ➔ 하늘(`#91bfdb`) ➔ 황금(`#fee08b`) ➔ 주황(`#fc8d59`) ➔ 진한 빨강(`#d73027`)
-- **대여소 마커 (CircleMarker)**:
-  - 원 크기: 총 이용량(승차+하차)에 비례
-  - 마커 색상: 빨강(🔴 순유출: 승차>하차), 파랑(🔵 순유입: 하차>승차), 녹색(🟢 균형)
+1. **개별 통행 흐름선 표출 (AntPath 동적 애니메이션)**:
+   - 100건 등으로 단순 묶음 선을 그리지 않고, **실시간 이동 방향으로 파티클 점선이 흐르는 AntPath 애니메이션**을 적용하여 각 경로의 실제 통행 방향성과 역동성을 직관적으로 표출합니다.
+   - **시간대별 개별 이동 레이어 (우측 상단 LayerControl)**:
+     - 🌅 **아침 출근시간대 (07~09시)**: 거여·마천 등 주거지 ➔ 잠실역/올림픽공원역/가락시장역 유입
+     - 🌆 **저녁 퇴근시간대 (17~19시)**: 잠실·문정 등 업무지구 ➔ 주거지 대규모 분산 유출
+     - ☀️ **주간 일상/레저 (11~15시)**: 한강공원·올림픽공원·석촌호수 주변 순환 통행
+     - 🌙 **야간/심야시간대 (21~04시)**: 송파대로 간선도로 및 심야 귀가 통행
+     - ✨ **전체 주요 개별 이동 경로 (AntPath 동적 선)**
+2. **24시간 시간대별 통행 흐름 타임랩스 (GIF 영상)**:
+   - [`charts/songpa_bike_hourly_flow_timelapse.gif`](./charts/songpa_bike_hourly_flow_timelapse.gif)
+   - 00시부터 23시까지의 실제 개별 따릉이 이동 궤적을 CartoDB 다크 베이스맵 위에 네온 발광 라인으로 렌더링한 고화질 타임랩스 애니메이션입니다.
+   - 우측 HUD에 시간대별 디지털 시계, 실시간 통행량 게이지, 24시간 통행량 바 차트, 시간대별 Top 3 통행 경로가 함께 재생됩니다.
+3. **대여소 마커 (CircleMarker)**:
+   - 원 크기: 총 이용량(승차+하차)에 비례
+   - 마커 색상: 빨강(🔴 순유출: 승차>하차), 파랑(🔵 순유입: 하차>승차), 녹색(🟢 균형)
 - 인터랙티브 지도 파일: [`maps/songpa_bike_od_flow_map.html`](./maps/songpa_bike_od_flow_map.html)
 
 ---

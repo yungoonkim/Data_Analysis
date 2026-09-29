@@ -69,7 +69,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import folium
-from IPython.display import display, HTML
+from folium.plugins import AntPath
+from IPython.display import display, HTML, Image
 
 # 맑은 고딕 한글 폰트 설정
 plt.rc('font', family='Malgun Gothic')
@@ -226,7 +227,10 @@ top_od = df_od[df_od['대여대여소번호'] != df_od['반납대여소번호']]
 display(top_od[['대여 대여소명', '반납대여소명', '이동건수', '평균이용시간_분', '평균이동거리_M', '선두께', '선색상']])
 """))
 
-cells.append(nbf.v4.new_code_cell("""# Google Maps 타일 레이어를 포함한 인터랙티브 지도 생성 (API 키 불필요)
+cells.append(nbf.v4.new_code_cell("""# Google Maps 타일 레이어를 포함한 개별 이동 흐름 인터랙티브 지도 생성
+# (단일 묶음 선 대신 AntPath 동적 애니메이션 및 시간대별 개별 이동 경로 표출)
+from folium.plugins import AntPath
+
 map_center = [37.5145, 127.1060]
 m = folium.Map(location=map_center, zoom_start=13, control_scale=True)
 
@@ -255,38 +259,98 @@ folium.TileLayer(
     control=True
 ).add_to(m)
 
-# 2. 이동 흐름선 레이어 (A대여소 -> B대여소)
-flow_layer = folium.FeatureGroup(name="따릉이 이동 흐름 (A ➔ B PolyLine)", show=True)
-od_inter = df_od[df_od['대여대여소번호'] != df_od['반납대여소번호']].head(200)
+# 2. 개별 통행 흐름 레이어 생성 (단일 묶음 대신 개별 흐름선 표출)
+od_inter = df_od[df_od['대여대여소번호'] != df_od['반납대여소번호']].copy()
+st_dict = df_stations.set_index('대여소번호')[['위도', '경도', '대여소명']].to_dict('index')
 
-for _, r in od_inter.iterrows():
+# (1) AntPath 동적 애니메이션 레이어 (실시간 이동 궤적 효과)
+antpath_layer = folium.FeatureGroup(name="✨ 전체 주요 개별 통행 흐름 (AntPath 동적 애니메이션)", show=True)
+for _, r in od_inter.head(150).iterrows():
     p1 = [r['출발_위도'], r['출발_경도']]
     p2 = [r['도착_위도'], r['도착_경도']]
     cnt = int(r['이동건수'])
-    weight = float(r['선두께'])
     color = str(r['선색상'])
     
     tooltip_html = f\"\"\"
     <div style='font-family: Pretendard, sans-serif; font-size: 13px; line-height: 1.4; padding: 4px;'>
-        <b>출발:</b> {r['대여 대여소명']}<br/>
-        <b>도착:</b> {r['반납대여소명']}<br/>
+        <b style='color: #2b5c8f;'>출발:</b> {r['대여 대여소명']}<br/>
+        <b style='color: #d9534f;'>도착:</b> {r['반납대여소명']}<br/>
         <hr style='margin: 4px 0;'/>
-        <b>이동 건수:</b> <span style='color: {color}; font-weight: bold;'>{cnt}건</span><br/>
+        <b>총 이동 건수:</b> <span style='color: {color}; font-weight: bold;'>{cnt}건</span><br/>
         <b>평균 소요:</b> {r['평균이용시간_분']:.1f}분 | <b>평균 거리:</b> {r['평균이동거리_M']:.0f} m
     </div>
     \"\"\"
     
-    folium.PolyLine(
+    # 묶음 선이 아닌 얇은 선(2.0px)에 움직이는 점선 파티클을 주어 개별 통행 방향 표출
+    AntPath(
         locations=[p1, p2],
+        delay=1000,
+        weight=2.0,
         color=color,
-        weight=weight,
+        pulse_color='#ffffff',
         opacity=0.75,
+        dash_array=[10, 20],
         tooltip=tooltip_html
-    ).add_to(flow_layer)
+    ).add_to(antpath_layer)
 
-flow_layer.add_to(m)
+antpath_layer.add_to(m)
 
-# 2. 대여소 마커 레이어
+# (2) 시간대별 개별 통행 흐름 레이어 헬퍼 함수
+def create_hourly_flow_layer(name, hours, line_color, top_n=100, show=False):
+    layer = folium.FeatureGroup(name=name, show=show)
+    sub = df_trips[(df_trips['대여시간대'].isin(hours)) & (df_trips['대여대여소번호'] != df_trips['반납대여소번호'])]
+    grouped = sub.groupby(['대여대여소번호', '대여 대여소명', '반납대여소번호', '반납대여소명']).agg(
+        이동건수=('대여일시', 'count'),
+        평균시간=('이용시간(분)', 'mean'),
+        평균거리=('이용거리(M)', 'mean')
+    ).reset_index().sort_values('이동건수', ascending=False).head(top_n)
+    
+    for _, r in grouped.iterrows():
+        st1 = st_dict.get(r['대여대여소번호'])
+        st2 = st_dict.get(r['반납대여소번호'])
+        if st1 and st2:
+            p1 = [st1['위도'], st1['경도']]
+            p2 = [st2['위도'], st2['경도']]
+            cnt = int(r['이동건수'])
+            
+            tooltip_html = f\"\"\"
+            <div style='font-family: Pretendard, sans-serif; font-size: 13px; line-height: 1.4; padding: 4px;'>
+                <span style='color: {line_color}; font-weight: bold;'>[{name.split()[0]}]</span><br/>
+                <b>출발:</b> {r['대여 대여소명']}<br/>
+                <b>도착:</b> {r['반납대여소명']}<br/>
+                <hr style='margin: 4px 0;'/>
+                <b>해당 시간대 이동:</b> <span style='color: {line_color}; font-weight: bold;'>{cnt}건</span><br/>
+                <b>평균 소요:</b> {r['평균시간']:.1f}분 | <b>거리:</b> {r['평균거리']:.0f}m
+            </div>
+            \"\"\"
+            
+            folium.PolyLine(
+                locations=[p1, p2],
+                color=line_color,
+                weight=1.8,
+                opacity=0.7,
+                tooltip=tooltip_html
+            ).add_to(layer)
+            
+    return layer
+
+# 출근 피크 (07~09시)
+morning_layer = create_hourly_flow_layer("🌅 아침 출근시간대 (07~09시) 개별 이동 흐름", [7, 8, 9], "#e31a1c", top_n=100, show=False)
+morning_layer.add_to(m)
+
+# 퇴근 피크 (17~19시)
+evening_layer = create_hourly_flow_layer("🌆 저녁 퇴근시간대 (17~19시) 개별 이동 흐름", [17, 18, 19], "#ff7f00", top_n=100, show=False)
+evening_layer.add_to(m)
+
+# 주간/생활 (11~15시)
+day_layer = create_hourly_flow_layer("☀️ 주간 일상/레저 (11~15시) 개별 이동 흐름", [11, 12, 13, 14, 15], "#33a02c", top_n=100, show=False)
+day_layer.add_to(m)
+
+# 야간/심야 (21~04시)
+night_layer = create_hourly_flow_layer("🌙 야간/심야시간대 (21~04시) 개별 이동 흐름", [21, 22, 23, 0, 1, 2, 3, 4], "#984ea3", top_n=100, show=False)
+night_layer.add_to(m)
+
+# 3. 대여소 마커 레이어
 station_layer = folium.FeatureGroup(name="대여소 위치 및 이용량 (CircleMarker)", show=True)
 dep_map = df_trips.groupby('대여대여소번호').size().to_dict()
 arr_map = df_trips.groupby('반납대여소번호').size().to_dict()
@@ -329,16 +393,18 @@ for _, st in df_stations.iterrows():
 
 station_layer.add_to(m)
 
-# 범례 HTML 추가
+# 4. 인터랙티브 범례 HTML 추가
 legend_html = \"\"\"
-<div style="position: fixed; bottom: 30px; right: 30px; width: 250px; background: white; border: 2px solid #718096; border-radius: 8px; z-index: 9999; font-size: 12px; padding: 10px 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-    <div style='font-weight: bold; margin-bottom: 6px;'>🚲 송파구 따릉이 통행 범례</div>
-    <div style='font-size: 11px; color: #4a5568;'>[이동량 선 두께 & 색상]</div>
-    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#d73027; width:28px; height:6px; margin-right:6px;'></span>100건 이상 (최다)</div>
-    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#fc8d59; width:28px; height:4.5px; margin-right:6px;'></span>50 ~ 99건 (많음)</div>
-    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#fee08b; width:28px; height:3.5px; margin-right:6px;'></span>20 ~ 49건 (보통)</div>
-    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#91bfdb; width:28px; height:2.5px; margin-right:6px;'></span>10 ~ 19건 (적음)</div>
-    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#4575b4; width:28px; height:1.5px; margin-right:6px;'></span>10건 미만 (최소)</div>
+<div style="position: fixed; bottom: 30px; right: 30px; width: 270px; background: white; border: 2px solid #718096; border-radius: 8px; z-index: 9999; font-size: 12px; padding: 10px 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+    <div style='font-weight: bold; margin-bottom: 6px; font-size: 13px;'>🚲 송파구 따릉이 개별 이동 범례</div>
+    <div style='font-size: 11px; color: #4a5568;'>[이동 흐름선 특징]</div>
+    <div style='margin-bottom: 4px; color: #2d3748;'>✨ <b>AntPath 동적 선:</b> 실시간 이동 방향으로 파티클 애니메이션 표출</div>
+    <hr style='margin: 5px 0;'/>
+    <div style='font-size: 11px; color: #4a5568;'>[시간대별 개별 이동 레이어 (우측 상단)]</div>
+    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#e31a1c; width:22px; height:3px; margin-right:6px;'></span>🌅 출근시간대 (07~09시)</div>
+    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#ff7f00; width:22px; height:3px; margin-right:6px;'></span>🌆 퇴근시간대 (17~19시)</div>
+    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#33a02c; width:22px; height:3px; margin-right:6px;'></span>☀️ 주간/레저 (11~15시)</div>
+    <div style='display: flex; align-items: center; margin: 2px 0;'><span style='background:#984ea3; width:22px; height:3px; margin-right:6px;'></span>🌙 야간/심야 (21~04시)</div>
     <hr style='margin: 5px 0;'/>
     <div style='font-size: 11px; color: #4a5568;'>[대여소 마커 순유출입]</div>
     <div>🔴 순유출(승차>하차) | 🔵 순유입(하차>승차) | 🟢 균형</div>
@@ -349,9 +415,34 @@ folium.LayerControl(collapsed=False).add_to(m)
 
 # 지도 파일 저장
 m.save('./maps/songpa_bike_od_flow_map.html')
-print("🗺️ 인터랙티브 지도가 './maps/songpa_bike_od_flow_map.html'에 저장되었습니다!")
+print("🗺️ 개별 통행 흐름 인터랙티브 지도가 './maps/songpa_bike_od_flow_map.html'에 저장되었습니다!")
 m
 """))
+
+# ==============================================================================
+# Cell 8-2: 24h Hourly Flow Timelapse GIF (Movie)
+# ==============================================================================
+cells.append(nbf.v4.new_markdown_cell("""### 🎬 [3단계 확장] 시간대별 따릉이 이동 흐름 24시간 타임랩스 (GIF 영상)
+- 단일 묶음 선의 한계를 넘어, **각 시간대(00시~23시)별 실제 개별 따릉이 이동 궤적과 통행량의 변화를 영상(GIF)**으로 연속 재생하여 관찰합니다.
+- **주요 관전 포인트:**
+  1. **🌅 07:00 ~ 09:00 (아침 출근 피크):** 거여·마천·방이 등 송파구 외곽 주거지에서 잠실역·올림픽공원역 등 주요 지하철 환승 거점으로 집중 유입되는 통근 흐름
+  2. **☀️ 11:00 ~ 15:00 (주간 레저/일상):** 올림픽공원, 석촌호수, 잠실한강공원 주변의 순환 통행 및 주요 상업지구 내 이동
+  3. **🌆 17:00 ~ 19:00 (저녁 퇴근 피크 - 일 최대):** 18시 기준 **7,432건**으로 하루 최고치 기록. 업무지구(잠실, 문정법조단지)에서 주거지로 역방향 대규모 분산 유출
+  4. **🌙 22:00 ~ 04:00 (심야 이동):** 지하철 운행 종료 후 송파대로 및 거여·마천 방면 귀가 통행 중심의 소규모 이동
+"""))
+
+cells.append(nbf.v4.new_code_cell("""# 24시간 시간대별 통행 흐름 타임랩스 GIF 영상 디스플레이
+from IPython.display import Image, display
+
+gif_path = './charts/songpa_bike_hourly_flow_timelapse.gif'
+
+if os.path.exists(gif_path):
+    print("🎬 송파구 따릉이 24시간 시간대별 통행 흐름 타임랩스 영상 (00시 ~ 23시):")
+    display(Image(filename=gif_path))
+else:
+    print(f"⚠️ GIF 파일을 찾을 수 없습니다: {gif_path}")
+"""))
+
 
 # ==============================================================================
 # Cell 9: Step 4 Temporal Patterns Markdown
