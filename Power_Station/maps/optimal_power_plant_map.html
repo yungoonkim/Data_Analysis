@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_90d982f8c0c99d714db1fd34e3e31863 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+</head>
+<body>
+    
+    
+<div style="
+    position: fixed; 
+    bottom: 30px; 
+    left: 30px; 
+    width: 250px; 
+    height: auto; 
+    background-color: rgba(255, 255, 255, 0.93);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    z-index: 9999;
+    border: 1px solid #ddd;
+    line-height: 1.6;
+">
+    <div style="font-weight: bold; font-size: 13px; margin-bottom: 8px; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">
+        신재생 최적 입지 범례
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+        <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #ff6f00; border: 2px solid #bf360c; margin-right: 8px;"></span>
+        <span><b>태양광 최적지</b> (회수 ≤ 6.5년)</span>
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+        <span style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background: #00897b; border: 2px solid #004d40; opacity: 0.7; margin-right: 6px;"></span>
+        <span><b>풍력 최적지</b> (회수 ≤ 8.0년)</span>
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+        <span style="position: relative; display: inline-block; width: 22px; height: 22px; margin-right: 6px;">
+            <span style="position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #00897b; border: 2px solid #004d40; opacity: 0.6; top: 0; left: 0;"></span>
+            <span style="position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #ff6f00; border: 2px solid #bf360c; top: 4px; left: 4px;"></span>
+        </span>
+        <span><b>태양광·풍력 복합 최적지</b></span>
+    </div>
+    <div style="font-size: 11px; color: #666; margin-top: 6px; border-top: 1px dashed #ccc; padding-top: 4px;">
+        💡 우측 상단 레이어 컨트롤에서<br/>종합 핀 마커 및 발전원별 토글 가능
+    </div>
+</div>
+    
+            <div class="folium-map" id="map_90d982f8c0c99d714db1fd34e3e31863" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_90d982f8c0c99d714db1fd34e3e31863 = L.map(
+                "map_90d982f8c0c99d714db1fd34e3e31863",
+                {
+                    center: [36.2, 127.8],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_45434d334934e5844e3d33c65b1bd07b = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_45434d334934e5844e3d33c65b1bd07b.addTo(map_90d982f8c0c99d714db1fd34e3e31863);
+        
+    
+            var feature_group_fc8b301e3a0a40549e674f70f338caa1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_c6384aff7d2dc8e0ba4c1a9257729a64 = L.circleMarker(
+                [37.6771, 128.7183],
+                {"bubblingMouseEvents": true, "color": "#004d40", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#00897b", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 24, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fc8b301e3a0a40549e674f70f338caa1);
+        
+    
+        var popup_ffc0e0400dda0891962eeb768891b251 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_0f7e66728f3b1f7685ef5cc9c32cf7b5 = $(`<div id="html_0f7e66728f3b1f7685ef5cc9c32cf7b5" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             강원특별자치도 <span style="font-size: 12px; color: #666;">(대관령/평창/태백(고원산간))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>15,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,820.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">7.3 m/s (이용률 34.8%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.42 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.10 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.10 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_ffc0e0400dda0891962eeb768891b251.setContent(html_0f7e66728f3b1f7685ef5cc9c32cf7b5);
+            
+        
+
+        circle_marker_c6384aff7d2dc8e0ba4c1a9257729a64.bindPopup(popup_ffc0e0400dda0891962eeb768891b251)
+        ;
+
+        
+    
+    
+            circle_marker_c6384aff7d2dc8e0ba4c1a9257729a64.bindTooltip(
+                `<div>
+                     💨 [풍력 최우수] 강원특별자치도 (대관령/평창/태백(고원산간)): 회수 4.10년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1192fd49e88d49cd89cb8b9f5b08379c = L.circleMarker(
+                [34.8171, 126.3812],
+                {"bubblingMouseEvents": true, "color": "#004d40", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#00897b", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 24, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fc8b301e3a0a40549e674f70f338caa1);
+        
+    
+        var popup_a543ee7ac714bea1b245b316e15e9c90 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_93739c61f2a3f0cba8b2691fcbfc5173 = $(`<div id="html_93739c61f2a3f0cba8b2691fcbfc5173" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전라남도 <span style="font-size: 12px; color: #666;">(신안/목포/해남(서남해도서))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>18,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,420.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.7 m/s (이용률 30.2%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">5.84 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.81 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.81 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_a543ee7ac714bea1b245b316e15e9c90.setContent(html_93739c61f2a3f0cba8b2691fcbfc5173);
+            
+        
+
+        circle_marker_1192fd49e88d49cd89cb8b9f5b08379c.bindPopup(popup_a543ee7ac714bea1b245b316e15e9c90)
+        ;
+
+        
+    
+    
+            circle_marker_1192fd49e88d49cd89cb8b9f5b08379c.bindTooltip(
+                `<div>
+                     💨 [풍력 최우수] 전라남도 (신안/목포/해남(서남해도서)): 회수 4.81년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fb07e470e6401e79f907a75630ef5a9e = L.circleMarker(
+                [34.7393, 127.7406],
+                {"bubblingMouseEvents": true, "color": "#004d40", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#00897b", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 24, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fc8b301e3a0a40549e674f70f338caa1);
+        
+    
+        var popup_dcf104ef42ea3fe4f2420ae3f17fbce9 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_48bc9a1ce342ddee68c0c5b01b249398 = $(`<div id="html_48bc9a1ce342ddee68c0c5b01b249398" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전라남도 <span style="font-size: 12px; color: #666;">(여수/고흥/완도(남해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>18,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,360.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.3 m/s (이용률 27.3%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">5.91 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">5.40 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">5.40 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_dcf104ef42ea3fe4f2420ae3f17fbce9.setContent(html_48bc9a1ce342ddee68c0c5b01b249398);
+            
+        
+
+        circle_marker_fb07e470e6401e79f907a75630ef5a9e.bindPopup(popup_dcf104ef42ea3fe4f2420ae3f17fbce9)
+        ;
+
+        
+    
+    
+            circle_marker_fb07e470e6401e79f907a75630ef5a9e.bindTooltip(
+                `<div>
+                     💨 [풍력 최우수] 전라남도 (여수/고흥/완도(남해안)): 회수 5.40년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f04048f6afb80dfeab77f6ef29555d4c = L.circleMarker(
+                [36.415, 129.365],
+                {"bubblingMouseEvents": true, "color": "#004d40", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#00897b", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 24, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fc8b301e3a0a40549e674f70f338caa1);
+        
+    
+        var popup_b1ae3aad49d8a8bcc84acb8e47e6f489 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_678eb64a509b8b211a84f61ae627e78d = $(`<div id="html_678eb64a509b8b211a84f61ae627e78d" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             경상북도 <span style="font-size: 12px; color: #666;">(영덕/영양/포항(동해안/풍황지))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>19,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,280.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.8 m/s (이용률 31.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.06 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.69 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.69 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_b1ae3aad49d8a8bcc84acb8e47e6f489.setContent(html_678eb64a509b8b211a84f61ae627e78d);
+            
+        
+
+        circle_marker_f04048f6afb80dfeab77f6ef29555d4c.bindPopup(popup_b1ae3aad49d8a8bcc84acb8e47e6f489)
+        ;
+
+        
+    
+    
+            circle_marker_f04048f6afb80dfeab77f6ef29555d4c.bindTooltip(
+                `<div>
+                     💨 [풍력 최우수] 경상북도 (영덕/영양/포항(동해안/풍황지)): 회수 4.69년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_22a55fa557fcec9a7defefdb7eb601f6 = L.circleMarker(
+                [33.5141, 126.5297],
+                {"bubblingMouseEvents": true, "color": "#004d40", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#00897b", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 24, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fc8b301e3a0a40549e674f70f338caa1);
+        
+    
+        var popup_8ce9d70cc95ce87718c6bc56753e1480 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_238b9c983190d059e00c196cfd7001ae = $(`<div id="html_238b9c983190d059e00c196cfd7001ae" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             제주특별자치도 <span style="font-size: 12px; color: #666;">(제주시/서귀포(중산간))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>58,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,860.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.1 m/s (이용률 25.8%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">9.80 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">6.79 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.79 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_8ce9d70cc95ce87718c6bc56753e1480.setContent(html_238b9c983190d059e00c196cfd7001ae);
+            
+        
+
+        circle_marker_22a55fa557fcec9a7defefdb7eb601f6.bindPopup(popup_8ce9d70cc95ce87718c6bc56753e1480)
+        ;
+
+        
+    
+    
+            circle_marker_22a55fa557fcec9a7defefdb7eb601f6.bindTooltip(
+                `<div>
+                     💨 [풍력 최우수] 제주특별자치도 (제주시/서귀포(중산간)): 회수 6.79년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b7fe7f5c394fab6be3add9463d7d60f0 = L.circleMarker(
+                [33.2938, 126.1628],
+                {"bubblingMouseEvents": true, "color": "#004d40", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#00897b", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 24, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fc8b301e3a0a40549e674f70f338caa1);
+        
+    
+        var popup_50903b84d77b6ea46d1793e53dbe586e = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c06ea23e5f285341989275f49f834544 = $(`<div id="html_c06ea23e5f285341989275f49f834544" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             제주특별자치도 <span style="font-size: 12px; color: #666;">(고산/한경/성산(해안풍황지))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>58,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,920.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">7.6 m/s (이용률 37.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">9.67 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.52 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.52 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_50903b84d77b6ea46d1793e53dbe586e.setContent(html_c06ea23e5f285341989275f49f834544);
+            
+        
+
+        circle_marker_b7fe7f5c394fab6be3add9463d7d60f0.bindPopup(popup_50903b84d77b6ea46d1793e53dbe586e)
+        ;
+
+        
+    
+    
+            circle_marker_b7fe7f5c394fab6be3add9463d7d60f0.bindTooltip(
+                `<div>
+                     💨 [풍력 최우수] 제주특별자치도 (고산/한경/성산(해안풍황지)): 회수 4.52년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_fc8b301e3a0a40549e674f70f338caa1.addTo(map_90d982f8c0c99d714db1fd34e3e31863);
+        
+    
+            var feature_group_af1d4d0a54697de1c76d7e300ec3dc2b = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_5e728ca52388a88b6e4b66258cab47e1 = L.circleMarker(
+                [37.7515, 128.891],
+                {"bubblingMouseEvents": true, "color": "#bf360c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6f00", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 3}
+            ).addTo(feature_group_af1d4d0a54697de1c76d7e300ec3dc2b);
+        
+    
+        var popup_96970c77e9295b420f8cefe8f26724ee = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_148ab553c4fa9d2e0dcf871b04dacf9e = $(`<div id="html_148ab553c4fa9d2e0dcf871b04dacf9e" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             강원특별자치도 <span style="font-size: 12px; color: #666;">(강릉/삼척(동해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>15,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,950.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">5.1 m/s (이용률 18.2%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.24 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">8.57 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.24 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_96970c77e9295b420f8cefe8f26724ee.setContent(html_148ab553c4fa9d2e0dcf871b04dacf9e);
+            
+        
+
+        circle_marker_5e728ca52388a88b6e4b66258cab47e1.bindPopup(popup_96970c77e9295b420f8cefe8f26724ee)
+        ;
+
+        
+    
+    
+            circle_marker_5e728ca52388a88b6e4b66258cab47e1.bindTooltip(
+                `<div>
+                     ☀️ [태양광 최우수] 강원특별자치도 (강릉/삼척(동해안)): 회수 6.24년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_38b176d9145a2db03113035136188b85 = L.circleMarker(
+                [37.6771, 128.7183],
+                {"bubblingMouseEvents": true, "color": "#bf360c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6f00", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 3}
+            ).addTo(feature_group_af1d4d0a54697de1c76d7e300ec3dc2b);
+        
+    
+        var popup_36b973099241cc719e7ee2fc54f1e76b = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_673b248a5a81cbf0634edf21089cfa31 = $(`<div id="html_673b248a5a81cbf0634edf21089cfa31" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             강원특별자치도 <span style="font-size: 12px; color: #666;">(대관령/평창/태백(고원산간))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>15,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,820.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">7.3 m/s (이용률 34.8%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.42 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.10 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.10 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_36b973099241cc719e7ee2fc54f1e76b.setContent(html_673b248a5a81cbf0634edf21089cfa31);
+            
+        
+
+        circle_marker_38b176d9145a2db03113035136188b85.bindPopup(popup_36b973099241cc719e7ee2fc54f1e76b)
+        ;
+
+        
+    
+    
+            circle_marker_38b176d9145a2db03113035136188b85.bindTooltip(
+                `<div>
+                     ☀️ [태양광 최우수] 강원특별자치도 (대관령/평창/태백(고원산간)): 회수 6.42년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0ce115a7eb048f40ecf7d5b4dcb3d9ae = L.circleMarker(
+                [35.8409, 127.1172],
+                {"bubblingMouseEvents": true, "color": "#bf360c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6f00", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 3}
+            ).addTo(feature_group_af1d4d0a54697de1c76d7e300ec3dc2b);
+        
+    
+        var popup_fd6d77fd5f1ab0597f97e7db984a1453 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_79ea9c1b036f79ed094d5b4ff0a4aa84 = $(`<div id="html_79ea9c1b036f79ed094d5b4ff0a4aa84" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전북특별자치도 <span style="font-size: 12px; color: #666;">(군산/고창/부안(서해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>22,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,160.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">5.0 m/s (이용률 17.5%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.36 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">9.14 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.36 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_fd6d77fd5f1ab0597f97e7db984a1453.setContent(html_79ea9c1b036f79ed094d5b4ff0a4aa84);
+            
+        
+
+        circle_marker_0ce115a7eb048f40ecf7d5b4dcb3d9ae.bindPopup(popup_fd6d77fd5f1ab0597f97e7db984a1453)
+        ;
+
+        
+    
+    
+            circle_marker_0ce115a7eb048f40ecf7d5b4dcb3d9ae.bindTooltip(
+                `<div>
+                     ☀️ [태양광 최우수] 전북특별자치도 (군산/고창/부안(서해안)): 회수 6.36년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6d6e5512d2a01d646bb5433e1428d2c2 = L.circleMarker(
+                [34.8171, 126.3812],
+                {"bubblingMouseEvents": true, "color": "#bf360c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6f00", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 3}
+            ).addTo(feature_group_af1d4d0a54697de1c76d7e300ec3dc2b);
+        
+    
+        var popup_1d0738f5410eae9abaa549aede223af9 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_95199cdb96cb9d2f8d5dda5ab4083533 = $(`<div id="html_95199cdb96cb9d2f8d5dda5ab4083533" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전라남도 <span style="font-size: 12px; color: #666;">(신안/목포/해남(서남해도서))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>18,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,420.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.7 m/s (이용률 30.2%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">5.84 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.81 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.81 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_1d0738f5410eae9abaa549aede223af9.setContent(html_95199cdb96cb9d2f8d5dda5ab4083533);
+            
+        
+
+        circle_marker_6d6e5512d2a01d646bb5433e1428d2c2.bindPopup(popup_1d0738f5410eae9abaa549aede223af9)
+        ;
+
+        
+    
+    
+            circle_marker_6d6e5512d2a01d646bb5433e1428d2c2.bindTooltip(
+                `<div>
+                     ☀️ [태양광 최우수] 전라남도 (신안/목포/해남(서남해도서)): 회수 5.84년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f27061ab9ef716692dfbb6fb2a76401c = L.circleMarker(
+                [34.7393, 127.7406],
+                {"bubblingMouseEvents": true, "color": "#bf360c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6f00", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 3}
+            ).addTo(feature_group_af1d4d0a54697de1c76d7e300ec3dc2b);
+        
+    
+        var popup_b85177e343686456b8c2b4a9f9754fe9 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_24cf38adfeac87ca902959902a1dd0f9 = $(`<div id="html_24cf38adfeac87ca902959902a1dd0f9" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전라남도 <span style="font-size: 12px; color: #666;">(여수/고흥/완도(남해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>18,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,360.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.3 m/s (이용률 27.3%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">5.91 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">5.40 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">5.40 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_b85177e343686456b8c2b4a9f9754fe9.setContent(html_24cf38adfeac87ca902959902a1dd0f9);
+            
+        
+
+        circle_marker_f27061ab9ef716692dfbb6fb2a76401c.bindPopup(popup_b85177e343686456b8c2b4a9f9754fe9)
+        ;
+
+        
+    
+    
+            circle_marker_f27061ab9ef716692dfbb6fb2a76401c.bindTooltip(
+                `<div>
+                     ☀️ [태양광 최우수] 전라남도 (여수/고흥/완도(남해안)): 회수 5.91년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_458c8f7d5ef7f0324dd22d12a0191ce4 = L.circleMarker(
+                [36.5729, 128.7073],
+                {"bubblingMouseEvents": true, "color": "#bf360c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6f00", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 3}
+            ).addTo(feature_group_af1d4d0a54697de1c76d7e300ec3dc2b);
+        
+    
+        var popup_4c4f7bdfe67222322ea05b9faf21ee89 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_eb64702e2aacfa5da5fba5c0be83e7a7 = $(`<div id="html_eb64702e2aacfa5da5fba5c0be83e7a7" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             경상북도 <span style="font-size: 12px; color: #666;">(안동/의성/상주(북부내륙))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>19,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,190.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">3.4 m/s (이용률 5.5%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.17 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">55.10 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.17 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_4c4f7bdfe67222322ea05b9faf21ee89.setContent(html_eb64702e2aacfa5da5fba5c0be83e7a7);
+            
+        
+
+        circle_marker_458c8f7d5ef7f0324dd22d12a0191ce4.bindPopup(popup_4c4f7bdfe67222322ea05b9faf21ee89)
+        ;
+
+        
+    
+    
+            circle_marker_458c8f7d5ef7f0324dd22d12a0191ce4.bindTooltip(
+                `<div>
+                     ☀️ [태양광 최우수] 경상북도 (안동/의성/상주(북부내륙)): 회수 6.17년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3ced9ac8afd4470f51dbf0111a722eaf = L.circleMarker(
+                [36.415, 129.365],
+                {"bubblingMouseEvents": true, "color": "#bf360c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6f00", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 3}
+            ).addTo(feature_group_af1d4d0a54697de1c76d7e300ec3dc2b);
+        
+    
+        var popup_dce2d19c738591f91fc9b693af8efa64 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_af5025f00b1bfcce78ff78e35615bf24 = $(`<div id="html_af5025f00b1bfcce78ff78e35615bf24" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             경상북도 <span style="font-size: 12px; color: #666;">(영덕/영양/포항(동해안/풍황지))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>19,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,280.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.8 m/s (이용률 31.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.06 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.69 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.69 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_dce2d19c738591f91fc9b693af8efa64.setContent(html_af5025f00b1bfcce78ff78e35615bf24);
+            
+        
+
+        circle_marker_3ced9ac8afd4470f51dbf0111a722eaf.bindPopup(popup_dce2d19c738591f91fc9b693af8efa64)
+        ;
+
+        
+    
+    
+            circle_marker_3ced9ac8afd4470f51dbf0111a722eaf.bindTooltip(
+                `<div>
+                     ☀️ [태양광 최우수] 경상북도 (영덕/영양/포항(동해안/풍황지)): 회수 6.06년
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_af1d4d0a54697de1c76d7e300ec3dc2b.addTo(map_90d982f8c0c99d714db1fd34e3e31863);
+        
+    
+            var feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_aed34bd94a430b2e09316e449a97da8a = L.marker(
+                [37.5714, 126.9658],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_c705085fedd48d7a2bee61bd84018f62 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_065e59f7fdef796b41693203dea9598f = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_5fef333963ae547cd1752734caa63a39 = $(`<div id="html_5fef333963ae547cd1752734caa63a39" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             서울특별시 <span style="font-size: 12px; color: #666;">(서울(종로))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>650,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,580.5 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">3.4 m/s (이용률 5.5%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">50.39 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">129.99 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">50.39 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_065e59f7fdef796b41693203dea9598f.setContent(html_5fef333963ae547cd1752734caa63a39);
+            
+        
+
+        marker_aed34bd94a430b2e09316e449a97da8a.bindPopup(popup_065e59f7fdef796b41693203dea9598f)
+        ;
+
+        
+    
+    
+            marker_aed34bd94a430b2e09316e449a97da8a.bindTooltip(
+                `<div>
+                     ⚡ 서울특별시 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_aed34bd94a430b2e09316e449a97da8a.setIcon(icon_c705085fedd48d7a2bee61bd84018f62);
+            
+    
+            var marker_711c2accbdf03ba5097f39a61821eefc = L.marker(
+                [35.1047, 129.032],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_8f1927d6167ed7a079a90e600201533a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ae7f9ff04550f99be35bd201f323aed4 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_1ab1719149be497f9a6498248b1c0c0f = $(`<div id="html_1ab1719149be497f9a6498248b1c0c0f" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             부산광역시 <span style="font-size: 12px; color: #666;">(부산(기장/해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>115,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,150.2 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">5.2 m/s (이용률 19.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">12.00 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">9.93 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">9.93 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_ae7f9ff04550f99be35bd201f323aed4.setContent(html_1ab1719149be497f9a6498248b1c0c0f);
+            
+        
+
+        marker_711c2accbdf03ba5097f39a61821eefc.bindPopup(popup_ae7f9ff04550f99be35bd201f323aed4)
+        ;
+
+        
+    
+    
+            marker_711c2accbdf03ba5097f39a61821eefc.bindTooltip(
+                `<div>
+                     ⚡ 부산광역시 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_711c2accbdf03ba5097f39a61821eefc.setIcon(icon_8f1927d6167ed7a079a90e600201533a);
+            
+    
+            var marker_5852ef661010ac1b7acdce6a2a9a0094 = L.marker(
+                [35.8779, 128.653],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_04eb75f3a5f22d33c8a472022e4e82f7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cd7e3abcc998af8d6420261d55d3ba81 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_9deb64dd57ebae50991d5215af9ea1ee = $(`<div id="html_9deb64dd57ebae50991d5215af9ea1ee" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             대구광역시 <span style="font-size: 12px; color: #666;">(대구(군위/달성))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>68,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,210.8 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">3.5 m/s (이용률 6.2%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">9.04 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">46.24 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">9.04 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_cd7e3abcc998af8d6420261d55d3ba81.setContent(html_9deb64dd57ebae50991d5215af9ea1ee);
+            
+        
+
+        marker_5852ef661010ac1b7acdce6a2a9a0094.bindPopup(popup_cd7e3abcc998af8d6420261d55d3ba81)
+        ;
+
+        
+    
+    
+            marker_5852ef661010ac1b7acdce6a2a9a0094.bindTooltip(
+                `<div>
+                     ⚡ 대구광역시 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5852ef661010ac1b7acdce6a2a9a0094.setIcon(icon_04eb75f3a5f22d33c8a472022e4e82f7);
+            
+    
+            var marker_da402ab0a787022c40c5a8c749bee7d6 = L.marker(
+                [37.4777, 126.6249],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_f5b4cfdc56a1a0845d227c47cce8a3c6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f9348f2e18968d41960d125087870df2 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_ea8869943d87afaa0bfffb18e7c39306 = $(`<div id="html_ea8869943d87afaa0bfffb18e7c39306" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             인천광역시 <span style="font-size: 12px; color: #666;">(인천(강화/옹진))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>135,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,690.4 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">4.6 m/s (이용률 14.5%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">14.62 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">14.35 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">14.35 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_f9348f2e18968d41960d125087870df2.setContent(html_ea8869943d87afaa0bfffb18e7c39306);
+            
+        
+
+        marker_da402ab0a787022c40c5a8c749bee7d6.bindPopup(popup_f9348f2e18968d41960d125087870df2)
+        ;
+
+        
+    
+    
+            marker_da402ab0a787022c40c5a8c749bee7d6.bindTooltip(
+                `<div>
+                     ⚡ 인천광역시 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_da402ab0a787022c40c5a8c749bee7d6.setIcon(icon_f5b4cfdc56a1a0845d227c47cce8a3c6);
+            
+    
+            var marker_fb80331b92737b69a25a72af4c750d1a = L.marker(
+                [35.1729, 126.8916],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_19a37639102ee2f9dbd5be7b8ab07501 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7ab784259e18e2ca617f2bf48991e6b0 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_342394d1b3bda1bedbffedef11539757 = $(`<div id="html_342394d1b3bda1bedbffedef11539757" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             광주광역시 <span style="font-size: 12px; color: #666;">(광주(광산구 외곽))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>72,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,120.6 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">3.1 m/s (이용률 5.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">9.46 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">77.73 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">9.46 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_7ab784259e18e2ca617f2bf48991e6b0.setContent(html_342394d1b3bda1bedbffedef11539757);
+            
+        
+
+        marker_fb80331b92737b69a25a72af4c750d1a.bindPopup(popup_7ab784259e18e2ca617f2bf48991e6b0)
+        ;
+
+        
+    
+    
+            marker_fb80331b92737b69a25a72af4c750d1a.bindTooltip(
+                `<div>
+                     ⚡ 광주광역시 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fb80331b92737b69a25a72af4c750d1a.setIcon(icon_19a37639102ee2f9dbd5be7b8ab07501);
+            
+    
+            var marker_d1bbe5ed0132f57bd9415eb6ed5055f4 = L.marker(
+                [36.372, 127.3732],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_581f25c74e3756b8e41d266ac96f432e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fcbcb786200a9b906b90efa6fc96714e = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_6667350852ed604938c0d70483699654 = $(`<div id="html_6667350852ed604938c0d70483699654" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             대전광역시 <span style="font-size: 12px; color: #666;">(대전(유성 외곽))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>105,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,980.2 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">2.9 m/s (이용률 5.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">11.82 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">82.70 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">11.82 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_fcbcb786200a9b906b90efa6fc96714e.setContent(html_6667350852ed604938c0d70483699654);
+            
+        
+
+        marker_d1bbe5ed0132f57bd9415eb6ed5055f4.bindPopup(popup_fcbcb786200a9b906b90efa6fc96714e)
+        ;
+
+        
+    
+    
+            marker_d1bbe5ed0132f57bd9415eb6ed5055f4.bindTooltip(
+                `<div>
+                     ⚡ 대전광역시 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d1bbe5ed0132f57bd9415eb6ed5055f4.setIcon(icon_581f25c74e3756b8e41d266ac96f432e);
+            
+    
+            var marker_41e0ceaefd794cc92b19650ebb0479e0 = L.marker(
+                [35.5825, 129.3347],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_ddda86855a20216cf7b5dba7bb2b6893 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_731bd6f2c8f77c41768380041e49ddd0 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_6e2a44ceac4d4fda57c44d6322a52977 = $(`<div id="html_6e2a44ceac4d4fda57c44d6322a52977" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             울산광역시 <span style="font-size: 12px; color: #666;">(울산(울주 해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>62,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,180.4 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">4.8 m/s (이용률 16.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">8.74 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">11.08 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">8.74 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_731bd6f2c8f77c41768380041e49ddd0.setContent(html_6e2a44ceac4d4fda57c44d6322a52977);
+            
+        
+
+        marker_41e0ceaefd794cc92b19650ebb0479e0.bindPopup(popup_731bd6f2c8f77c41768380041e49ddd0)
+        ;
+
+        
+    
+    
+            marker_41e0ceaefd794cc92b19650ebb0479e0.bindTooltip(
+                `<div>
+                     ⚡ 울산광역시 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_41e0ceaefd794cc92b19650ebb0479e0.setIcon(icon_ddda86855a20216cf7b5dba7bb2b6893);
+            
+    
+            var marker_d444c787a5fcff2acc96ac6b7b0ab0b0 = L.marker(
+                [36.48, 127.289],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_33de234152003065694d326fd0b3ea17 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b1a3a3a7ed43d214604c42f4c4b34cdd = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_7866d3c42122525aeb0693c9e26820b4 = $(`<div id="html_7866d3c42122525aeb0693c9e26820b4" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             세종특별자치시 <span style="font-size: 12px; color: #666;">(세종(조치원/연기))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>92,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,940.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">2.7 m/s (이용률 5.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">11.10 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">80.74 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">11.10 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_b1a3a3a7ed43d214604c42f4c4b34cdd.setContent(html_7866d3c42122525aeb0693c9e26820b4);
+            
+        
+
+        marker_d444c787a5fcff2acc96ac6b7b0ab0b0.bindPopup(popup_b1a3a3a7ed43d214604c42f4c4b34cdd)
+        ;
+
+        
+    
+    
+            marker_d444c787a5fcff2acc96ac6b7b0ab0b0.bindTooltip(
+                `<div>
+                     ⚡ 세종특별자치시 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d444c787a5fcff2acc96ac6b7b0ab0b0.setIcon(icon_33de234152003065694d326fd0b3ea17);
+            
+    
+            var marker_47e3eaf8573ab8489a3677022cd59bc7 = L.marker(
+                [37.2575, 126.983],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_615aebd53d7610a703caa175c8502e8b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f361d967db610aa80f5d65af78ac71bf = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_44bf7e5ab5cb70f500b0f9286b66394d = $(`<div id="html_44bf7e5ab5cb70f500b0f9286b66394d" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             경기도 <span style="font-size: 12px; color: #666;">(화성/평택/여주)</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>175,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,720.5 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">3.0 m/s (이용률 5.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">17.17 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">93.23 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">17.17 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_f361d967db610aa80f5d65af78ac71bf.setContent(html_44bf7e5ab5cb70f500b0f9286b66394d);
+            
+        
+
+        marker_47e3eaf8573ab8489a3677022cd59bc7.bindPopup(popup_f361d967db610aa80f5d65af78ac71bf)
+        ;
+
+        
+    
+    
+            marker_47e3eaf8573ab8489a3677022cd59bc7.bindTooltip(
+                `<div>
+                     ⚡ 경기도 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_47e3eaf8573ab8489a3677022cd59bc7.setIcon(icon_615aebd53d7610a703caa175c8502e8b);
+            
+    
+            var marker_838cd56e62f80dfc46a6f304409e1c57 = L.marker(
+                [37.7515, 128.891],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_a54c9eae0be228369bfa7e1e3f1b8f68 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_50e2ad70a2028f964fd7dfe50e759063 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c38d192d0af1dd76586a7c2c34585327 = $(`<div id="html_c38d192d0af1dd76586a7c2c34585327" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             강원특별자치도 <span style="font-size: 12px; color: #666;">(강릉/삼척(동해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>15,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,950.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">5.1 m/s (이용률 18.2%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.24 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">8.57 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.24 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_50e2ad70a2028f964fd7dfe50e759063.setContent(html_c38d192d0af1dd76586a7c2c34585327);
+            
+        
+
+        marker_838cd56e62f80dfc46a6f304409e1c57.bindPopup(popup_50e2ad70a2028f964fd7dfe50e759063)
+        ;
+
+        
+    
+    
+            marker_838cd56e62f80dfc46a6f304409e1c57.bindTooltip(
+                `<div>
+                     ⚡ 강원특별자치도 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_838cd56e62f80dfc46a6f304409e1c57.setIcon(icon_a54c9eae0be228369bfa7e1e3f1b8f68);
+            
+    
+            var marker_286ad7c2bbd01e0b401bd067d2adfaa9 = L.marker(
+                [37.6771, 128.7183],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_1ce02d631b66962dc39d9a5a165bf069 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2e83d0431b4c7747b4db0396dc69c53f = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_d5c51a5a502b33d160a8bc1a8e3e6c05 = $(`<div id="html_d5c51a5a502b33d160a8bc1a8e3e6c05" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             강원특별자치도 <span style="font-size: 12px; color: #666;">(대관령/평창/태백(고원산간))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>15,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,820.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">7.3 m/s (이용률 34.8%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.42 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.10 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.10 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_2e83d0431b4c7747b4db0396dc69c53f.setContent(html_d5c51a5a502b33d160a8bc1a8e3e6c05);
+            
+        
+
+        marker_286ad7c2bbd01e0b401bd067d2adfaa9.bindPopup(popup_2e83d0431b4c7747b4db0396dc69c53f)
+        ;
+
+        
+    
+    
+            marker_286ad7c2bbd01e0b401bd067d2adfaa9.bindTooltip(
+                `<div>
+                     ⚡ 강원특별자치도 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_286ad7c2bbd01e0b401bd067d2adfaa9.setIcon(icon_1ce02d631b66962dc39d9a5a165bf069);
+            
+    
+            var marker_ea5f1ef8509239f2f322e752e1d3da7f = L.marker(
+                [36.6372, 127.4414],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_6579b01ecc06d2c816796598e8a84362 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_80620c8411a7b132fae4d1c366d70f0d = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_52e937ec451ff8e15bc7d5f1bc03c57f = $(`<div id="html_52e937ec451ff8e15bc7d5f1bc03c57f" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             충청북도 <span style="font-size: 12px; color: #666;">(청주/괴산/영동)</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>26,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,890.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">2.8 m/s (이용률 5.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">7.00 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">70.81 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">7.00 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_80620c8411a7b132fae4d1c366d70f0d.setContent(html_52e937ec451ff8e15bc7d5f1bc03c57f);
+            
+        
+
+        marker_ea5f1ef8509239f2f322e752e1d3da7f.bindPopup(popup_80620c8411a7b132fae4d1c366d70f0d)
+        ;
+
+        
+    
+    
+            marker_ea5f1ef8509239f2f322e752e1d3da7f.bindTooltip(
+                `<div>
+                     ⚡ 충청북도 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ea5f1ef8509239f2f322e752e1d3da7f.setIcon(icon_6579b01ecc06d2c816796598e8a84362);
+            
+    
+            var marker_588cdf6deb2e594786e7fb27b0f5ce44 = L.marker(
+                [36.7766, 126.4939],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_2ea27c450577c588a3cde17d854055c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_86e8f0047c0bc09d282bed18d7b069de = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c6d6eee615a535e5e0e9a923e3ddc022 = $(`<div id="html_c6d6eee615a535e5e0e9a923e3ddc022" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             충청남도 <span style="font-size: 12px; color: #666;">(서산/태안/보령(서해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>32,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,080.5 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">5.3 m/s (이용률 19.8%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">7.08 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">8.07 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">7.08 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_86e8f0047c0bc09d282bed18d7b069de.setContent(html_c6d6eee615a535e5e0e9a923e3ddc022);
+            
+        
+
+        marker_588cdf6deb2e594786e7fb27b0f5ce44.bindPopup(popup_86e8f0047c0bc09d282bed18d7b069de)
+        ;
+
+        
+    
+    
+            marker_588cdf6deb2e594786e7fb27b0f5ce44.bindTooltip(
+                `<div>
+                     ⚡ 충청남도 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_588cdf6deb2e594786e7fb27b0f5ce44.setIcon(icon_2ea27c450577c588a3cde17d854055c3);
+            
+    
+            var marker_56f0a3d9ac1167d6f029771a5f6b334c = L.marker(
+                [35.8409, 127.1172],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_641ced483827bdba8b03c7749ae258c6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_19d0ce656b75496b90e9b84201ed89fb = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_869a57371ac6d67062f6c59b3e1ea88d = $(`<div id="html_869a57371ac6d67062f6c59b3e1ea88d" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전북특별자치도 <span style="font-size: 12px; color: #666;">(군산/고창/부안(서해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>22,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,160.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">5.0 m/s (이용률 17.5%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.36 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">9.14 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.36 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_19d0ce656b75496b90e9b84201ed89fb.setContent(html_869a57371ac6d67062f6c59b3e1ea88d);
+            
+        
+
+        marker_56f0a3d9ac1167d6f029771a5f6b334c.bindPopup(popup_19d0ce656b75496b90e9b84201ed89fb)
+        ;
+
+        
+    
+    
+            marker_56f0a3d9ac1167d6f029771a5f6b334c.bindTooltip(
+                `<div>
+                     ⚡ 전북특별자치도 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_56f0a3d9ac1167d6f029771a5f6b334c.setIcon(icon_641ced483827bdba8b03c7749ae258c6);
+            
+    
+            var marker_66c9a821d12629d8f9ab2136ceac8bf6 = L.marker(
+                [34.8171, 126.3812],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_eaf70aba4d6879674f5f43e11df11a5b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2e794eb47546caf7b53d21508b7f331c = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_9ae43153153bc5f34a84d8ab8c5feabc = $(`<div id="html_9ae43153153bc5f34a84d8ab8c5feabc" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전라남도 <span style="font-size: 12px; color: #666;">(신안/목포/해남(서남해도서))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>18,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,420.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.7 m/s (이용률 30.2%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">5.84 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.81 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.81 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_2e794eb47546caf7b53d21508b7f331c.setContent(html_9ae43153153bc5f34a84d8ab8c5feabc);
+            
+        
+
+        marker_66c9a821d12629d8f9ab2136ceac8bf6.bindPopup(popup_2e794eb47546caf7b53d21508b7f331c)
+        ;
+
+        
+    
+    
+            marker_66c9a821d12629d8f9ab2136ceac8bf6.bindTooltip(
+                `<div>
+                     ⚡ 전라남도 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_66c9a821d12629d8f9ab2136ceac8bf6.setIcon(icon_eaf70aba4d6879674f5f43e11df11a5b);
+            
+    
+            var marker_d7b2bb580eb048a8545e3e5fe28a9c94 = L.marker(
+                [34.7393, 127.7406],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_1d465516fb8ae339738493ef76b6689e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bc7b4df678b1ef5713f6fbf33ee6436c = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_b545a8fe60271dffb86222546542f288 = $(`<div id="html_b545a8fe60271dffb86222546542f288" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             전라남도 <span style="font-size: 12px; color: #666;">(여수/고흥/완도(남해안))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>18,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,360.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.3 m/s (이용률 27.3%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">5.91 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">5.40 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">5.40 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_bc7b4df678b1ef5713f6fbf33ee6436c.setContent(html_b545a8fe60271dffb86222546542f288);
+            
+        
+
+        marker_d7b2bb580eb048a8545e3e5fe28a9c94.bindPopup(popup_bc7b4df678b1ef5713f6fbf33ee6436c)
+        ;
+
+        
+    
+    
+            marker_d7b2bb580eb048a8545e3e5fe28a9c94.bindTooltip(
+                `<div>
+                     ⚡ 전라남도 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d7b2bb580eb048a8545e3e5fe28a9c94.setIcon(icon_1d465516fb8ae339738493ef76b6689e);
+            
+    
+            var marker_0c0e96a2f83cea8a33d3b307ab6552a2 = L.marker(
+                [36.5729, 128.7073],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_7e6334974b762048b5b4d9506f084b74 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_86e592238478c386393b34667b9f0cbf = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_b2dfc7ad248cfafba17ff30bcf238b3d = $(`<div id="html_b2dfc7ad248cfafba17ff30bcf238b3d" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             경상북도 <span style="font-size: 12px; color: #666;">(안동/의성/상주(북부내륙))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>19,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,190.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">3.4 m/s (이용률 5.5%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.17 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">55.10 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.17 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_86e592238478c386393b34667b9f0cbf.setContent(html_b2dfc7ad248cfafba17ff30bcf238b3d);
+            
+        
+
+        marker_0c0e96a2f83cea8a33d3b307ab6552a2.bindPopup(popup_86e592238478c386393b34667b9f0cbf)
+        ;
+
+        
+    
+    
+            marker_0c0e96a2f83cea8a33d3b307ab6552a2.bindTooltip(
+                `<div>
+                     ⚡ 경상북도 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0c0e96a2f83cea8a33d3b307ab6552a2.setIcon(icon_7e6334974b762048b5b4d9506f084b74);
+            
+    
+            var marker_12e6745bdf6ca240fd8071e818ade825 = L.marker(
+                [36.415, 129.365],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_ec11af64f3f9f9c137034d63be8c87c8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_957a0511da1e24451f65d23428760eb0 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_9eebafaf146e27192e120a2f7b68ac5a = $(`<div id="html_9eebafaf146e27192e120a2f7b68ac5a" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             경상북도 <span style="font-size: 12px; color: #666;">(영덕/영양/포항(동해안/풍황지))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>19,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,280.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.8 m/s (이용률 31.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.06 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.69 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.69 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_957a0511da1e24451f65d23428760eb0.setContent(html_9eebafaf146e27192e120a2f7b68ac5a);
+            
+        
+
+        marker_12e6745bdf6ca240fd8071e818ade825.bindPopup(popup_957a0511da1e24451f65d23428760eb0)
+        ;
+
+        
+    
+    
+            marker_12e6745bdf6ca240fd8071e818ade825.bindTooltip(
+                `<div>
+                     ⚡ 경상북도 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_12e6745bdf6ca240fd8071e818ade825.setIcon(icon_ec11af64f3f9f9c137034d63be8c87c8);
+            
+    
+            var marker_a16d27385024eb4e6765a87245e0144f = L.marker(
+                [35.1638, 128.04],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_22f16f6f69b0d6ec373121dac77c82fb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9ed7bae87d2b596198ce4f27386c2a1f = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_aa6b5740d6dc76c8d3ea7f14bb2a6746 = $(`<div id="html_aa6b5740d6dc76c8d3ea7f14bb2a6746" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             경상남도 <span style="font-size: 12px; color: #666;">(밀양/합천/창녕(경남서부))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>28,500 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">5,210.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">3.8 m/s (이용률 8.5%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">6.68 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">24.80 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">태양광(Solar)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.68 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_9ed7bae87d2b596198ce4f27386c2a1f.setContent(html_aa6b5740d6dc76c8d3ea7f14bb2a6746);
+            
+        
+
+        marker_a16d27385024eb4e6765a87245e0144f.bindPopup(popup_9ed7bae87d2b596198ce4f27386c2a1f)
+        ;
+
+        
+    
+    
+            marker_a16d27385024eb4e6765a87245e0144f.bindTooltip(
+                `<div>
+                     ⚡ 경상남도 (태양광(Solar))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a16d27385024eb4e6765a87245e0144f.setIcon(icon_22f16f6f69b0d6ec373121dac77c82fb);
+            
+    
+            var marker_cef10b9ada25cde90f91888e529360dc = L.marker(
+                [33.5141, 126.5297],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_49c1edb1e951cca09ae15300bee83365 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c3c95e4879d7f5e3b324c37539b152ae = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c240f464b769ae705df582129fb2b987 = $(`<div id="html_c240f464b769ae705df582129fb2b987" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             제주특별자치도 <span style="font-size: 12px; color: #666;">(제주시/서귀포(중산간))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>58,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,860.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">6.1 m/s (이용률 25.8%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">9.80 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">6.79 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">6.79 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_c3c95e4879d7f5e3b324c37539b152ae.setContent(html_c240f464b769ae705df582129fb2b987);
+            
+        
+
+        marker_cef10b9ada25cde90f91888e529360dc.bindPopup(popup_c3c95e4879d7f5e3b324c37539b152ae)
+        ;
+
+        
+    
+    
+            marker_cef10b9ada25cde90f91888e529360dc.bindTooltip(
+                `<div>
+                     ⚡ 제주특별자치도 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cef10b9ada25cde90f91888e529360dc.setIcon(icon_49c1edb1e951cca09ae15300bee83365);
+            
+    
+            var marker_89da5e1ceaf6be847410be4bb8c7229f = L.marker(
+                [33.2938, 126.1628],
+                {
+}
+            ).addTo(feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2);
+        
+    
+            var icon_f86f788833e702a32f29d857e84b7963 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "bolt",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f0636b44b14e82e44f334200e9f3903b = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c4a55fb7e9821d49ebe910e6bf3520ea = $(`<div id="html_c4a55fb7e9821d49ebe910e6bf3520ea" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; width: 280px; padding: 6px;">         <h4 style="margin: 0 0 8px 0; color: #1a237e; border-bottom: 2px solid #3f51b5; padding-bottom: 4px;">             제주특별자치도 <span style="font-size: 12px; color: #666;">(고산/한경/성산(해안풍황지))</span>         </h4>         <table style="width: 100%; font-size: 11px; border-collapse: collapse; line-height: 1.5;">             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>토지 공시지가:</b></td><td style="text-align: right;"><b>58,000 원/㎡</b></td></tr>             <tr><td style="padding: 3px;"><b>연간 일사량:</b></td><td style="text-align: right;">4,920.0 MJ/㎡</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>80m 허브풍속:</b></td><td style="text-align: right;">7.6 m/s (이용률 37.0%)</td></tr>             <tr><td style="padding: 3px;"><b>태양광 회수기간:</b></td><td style="text-align: right; color: #e65100; font-weight: bold;">9.67 년</td></tr>             <tr style="background: #f5f5f5;"><td style="padding: 3px;"><b>풍력 회수기간:</b></td><td style="text-align: right; color: #00695c; font-weight: bold;">4.52 년</td></tr>             <tr><td style="padding: 3px;"><b>추천 최적 발전:</b></td><td style="text-align: right; color: #b71c1c; font-weight: bold;">풍력(Wind)</td></tr>             <tr style="background: #e8eaf6;"><td style="padding: 3px;"><b>최단 회수기간:</b></td><td style="text-align: right; color: #1a237e; font-weight: bold; font-size: 12px;">4.52 년</td></tr>         </table>     </div>     </div>`)[0];
+                popup_f0636b44b14e82e44f334200e9f3903b.setContent(html_c4a55fb7e9821d49ebe910e6bf3520ea);
+            
+        
+
+        marker_89da5e1ceaf6be847410be4bb8c7229f.bindPopup(popup_f0636b44b14e82e44f334200e9f3903b)
+        ;
+
+        
+    
+    
+            marker_89da5e1ceaf6be847410be4bb8c7229f.bindTooltip(
+                `<div>
+                     ⚡ 제주특별자치도 (풍력(Wind))
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_89da5e1ceaf6be847410be4bb8c7229f.setIcon(icon_f86f788833e702a32f29d857e84b7963);
+            
+    
+            var layer_control_cfb1951e8fb345467e24d437a7566c96_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_45434d334934e5844e3d33c65b1bd07b,
+                },
+                overlays :  {
+                    "\ud83d\udca8 \ud48d\ub825 \ucd5c\uc801\uc9c0 (Wind Optimal, \u22648.0\ub144)" : feature_group_fc8b301e3a0a40549e674f70f338caa1,
+                    "\u2600\ufe0f \ud0dc\uc591\uad11 \ucd5c\uc801\uc9c0 (Solar Optimal, \u22646.5\ub144)" : feature_group_af1d4d0a54697de1c76d7e300ec3dc2b,
+                    "\u26a1 \uc804\uad6d \uad00\uce21\uc9c0\uc810 \uc885\ud569 (All Stations)" : feature_group_d3f98903a6325fd1d8b24b1aaae4d7c2,
+                },
+            };
+            let layer_control_cfb1951e8fb345467e24d437a7566c96 = L.control.layers(
+                layer_control_cfb1951e8fb345467e24d437a7566c96_layers.base_layers,
+                layer_control_cfb1951e8fb345467e24d437a7566c96_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_90d982f8c0c99d714db1fd34e3e31863);
+
+        
+    
+            var tile_layer_5b950f2b20f7b43a605d56cd0c2d0e32 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_ae586bb39e8b85ce759f5852a829d47b = new L.Control.MiniMap(
+                tile_layer_5b950f2b20f7b43a605d56cd0c2d0e32,
+                {
+  "position": "bottomright",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": false,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_90d982f8c0c99d714db1fd34e3e31863.addControl(mini_map_ae586bb39e8b85ce759f5852a829d47b);
+        
+</script>
+</html>

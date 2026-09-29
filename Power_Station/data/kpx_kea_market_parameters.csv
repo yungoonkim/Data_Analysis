@@ -1,0 +1,2 @@
+﻿smp_land_krw_kwh,smp_jeju_krw_kwh,rec_price_krw_kwh,rec_weight_solar,rec_weight_wind,capex_solar_krw_kw,capex_wind_krw_kw,opex_rate_solar,opex_rate_wind,land_area_solar_m2_per_kw,land_area_wind_m2_per_kw,land_purchase_overhead,discount_rate,plant_lifetime_years,solar_performance_ratio,jeju_curtailment_risk_rate
+132.5,145.2,72.0,1.0,1.2,1200000,2400000,0.015,0.025,12.0,4.5,1.2,0.045,20,0.81,0.12
