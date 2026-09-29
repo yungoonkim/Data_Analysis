@@ -1,0 +1,4 @@
+flask>=3.0
+pillow>=10.0
+# 아이폰 HEIC 사진 (없으면 macOS의 sips로 변환해서 읽음)
+pillow-heif

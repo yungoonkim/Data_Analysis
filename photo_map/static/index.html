@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사진 촬영 위치 지도</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root { --bg:#f6f7f5; --card:#fff; --ink:#1d2320; --muted:#6b736f; --line:#e3e6e3; --accent:#e8702a; --accent2:#2a7d6f; }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; background:var(--bg); color:var(--ink); display:flex; flex-direction:column; }
+  header { padding:14px 20px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; }
+  .sub { color:var(--muted); font-size:13px; }
+  .badge { font-size:12px; padding:3px 8px; border-radius:99px; background:#e6f3f0; color:var(--accent2); }
+  .badge.warn { background:#fdf1e8; color:var(--accent); }
+  .btn { padding:6px 12px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; font:inherit; font-size:13px; color:var(--ink); text-decoration:none; display:inline-block; }
+  .spacer { flex:1; }
+  .wrap { flex:1; display:grid; grid-template-columns:340px 1fr; min-height:0; }
+  @media (max-width: 860px) { .wrap { grid-template-columns:1fr; grid-template-rows:55vh auto; } .wrap aside { order:2; } }
+  aside { overflow:auto; border-right:1px solid var(--line); background:#fff; }
+  .summary { padding:14px 16px; border-bottom:1px solid var(--line); font-size:13px; color:var(--muted); line-height:1.6; }
+  .summary b { color:var(--ink); }
+  .section { padding:10px 16px 4px; font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.02em; }
+  .item { display:grid; grid-template-columns:72px 1fr; gap:10px; padding:8px 16px; cursor:pointer; border-left:3px solid transparent; }
+  .item:hover { background:#f4f6f4; }
+  .item.on { background:#fdf1e8; border-left-color:var(--accent); }
+  .item img { width:72px; height:54px; object-fit:cover; border-radius:6px; background:#dfe7e3; }
+  .item .t { font-size:14px; font-weight:600; }
+  .item .m { font-size:12px; color:var(--muted); margin-top:2px; }
+  .item.nogps { opacity:.6; cursor:default; }
+  .mapwrap { position:relative; min-height:300px; }
+  #map, #gmap { position:absolute; inset:0; }
+  .maptag { position:absolute; left:12px; bottom:24px; z-index:500; background:rgba(255,255,255,.92); padding:6px 10px; border-radius:8px; font-size:12px; color:var(--muted); box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .pm { position:relative; width:56px; height:56px; border-radius:50%; border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.35); background:#dfe7e3 center/cover; cursor:pointer; }
+  .pm span { position:absolute; right:-6px; top:-6px; background:var(--accent); color:#fff; font-size:12px; font-weight:700; border-radius:99px; padding:1px 7px; border:2px solid #fff; }
+  .iw { width:300px; font-family:inherit; }
+  .iw h4 { margin:0 0 6px; font-size:14px; }
+  .iw .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
+  .iw .grid img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:4px; cursor:pointer; }
+  .iw .near { margin-top:8px; font-size:12px; }
+  .iw .near a { color:var(--accent2); }
+  dialog { border:none; border-radius:14px; padding:0; width:min(1000px,94vw); max-height:92vh; }
+  dialog::backdrop { background:rgba(0,0,0,.6); }
+  .lb { display:grid; grid-template-columns:1fr 280px; }
+  @media (max-width: 760px) { .lb { grid-template-columns:1fr; } }
+  .lb .img { background:#111; display:flex; align-items:center; justify-content:center; min-height:300px; position:relative; }
+  .lb .img img { max-width:100%; max-height:82vh; display:block; }
+  .lb .nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.85); border:none; border-radius:50%; width:40px; height:40px; font-size:20px; cursor:pointer; }
+  .lb .prev { left:10px; } .lb .next { right:10px; }
+  .lb .info { padding:16px 18px; font-size:13px; overflow:auto; max-height:82vh; }
+  .lb .info h3 { margin:0 0 10px; font-size:16px; }
+  .lb table { width:100%; border-collapse:collapse; }
+  .lb td { padding:5px 2px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .lb td:first-child { color:var(--muted); width:72px; }
+  .compass { width:64px; height:64px; margin:10px 0; }
+  .near-list a { display:block; color:var(--ink); text-decoration:none; padding:6px 0; border-bottom:1px solid var(--line); }
+  .near-list small { color:var(--muted); }
+  .empty { padding:40px; text-align:center; color:var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>사진 촬영 위치 지도</h1>
+  <span class="sub" id="folder"></span>
+  <span class="badge" id="mapMode">지도 준비 중</span>
+  <span class="spacer"></span>
+  <label class="sub"><input type="checkbox" id="showDir" checked> 촬영 방향</label>
+  <button class="btn" id="reload" title="폴더를 다시 읽습니다 (사진을 추가·삭제한 뒤)">다시 읽기</button>
+</header>
+<div class="wrap">
+  <aside>
+    <div class="summary" id="summary">불러오는 중…</div>
+    <div id="list"></div>
+  </aside>
+  <div class="mapwrap">
+    <div id="map"></div>
+    <div id="gmap" style="display:none"></div>
+    <div class="maptag" id="maptag" style="display:none"></div>
+  </div>
+</div>
+
+<dialog id="dlg"><div class="lb">
+  <div class="img"><img id="lbImg" alt=""><button class="nav prev" id="prev">‹</button><button class="nav next" id="next">›</button></div>
+  <div class="info" id="lbInfo"></div>
+</div></dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const thumb = f => "/thumb/" + encodeURIComponent(f);
+const large = f => "/large/" + encodeURIComponent(f);
+
+const D = { photos:[], groups:[], byFile:{}, gps:[], current:null };
+const M = { kind:null, g:null, gMarkers:[], gLines:[], iw:null, osm:null, osmLayer:null, lineMap:{} };
+const DIR_LEN = 40;   // 촬영 방향 화살표 길이(m)
+
+// ── 좌표 계산: 한 점에서 방위각(bearing) 방향으로 d미터 떨어진 점 ────────
+function offset(lat, lng, bearingDeg, d) {
+  const b = bearingDeg * Math.PI / 180;
+  return { lat: lat + d * Math.cos(b) / 111320, lng: lng + d * Math.sin(b) / (111320 * Math.cos(lat * Math.PI / 180)) };
+}
+const dirName = deg => ["북","북동","동","남동","남","남서","서","북서"][Math.round(deg / 45) % 8];
+const gmapsLink = p => `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
+
+// ── 데이터 불러오기 ─────────────────────────────────────────────────────
+async function load() {
+  const r = await fetch("/api/photos"); const d = await r.json();
+  D.photos = d.photos; D.groups = d.groups; D.byFile = Object.fromEntries(d.photos.map(p => [p.file, p]));
+  D.gps = d.photos.filter(p => p.lat != null);
+  $("folder").textContent = d.folder;
+  renderList(d);
+  if (!M.kind) await initMap(d.google_maps_key, d.google_maps_map_id);
+  drawMap();
+}
+
+function renderList(d) {
+  const noGps = D.photos.filter(p => p.lat == null);
+  const days = [...new Set(D.photos.map(p => (p.taken || "").slice(0, 10)).filter(Boolean))];
+  const alts = D.gps.map(p => p.altitude).filter(a => a != null);
+  $("summary").innerHTML = D.photos.length
+    ? `사진 <b>${D.photos.length}</b>장 · 위치 있음 <b>${D.gps.length}</b>장 · 장소 <b>${D.groups.length}</b>곳<br>
+       촬영일 ${days.join(", ") || "-"}${alts.length ? `<br>고도 ${Math.min(...alts).toFixed(0)}~${Math.max(...alts).toFixed(0)}m` : ""}<br>
+       <small>${d.group_m}m 안의 사진은 지도에서 한 마커로 묶었습니다.${d.heic ? "" : " HEIC는 pillow-heif 설치 시 표시."}</small>`
+    : "사진 폴더가 비어 있습니다.";
+  const row = p => `<div class="item ${p.lat == null ? "nogps" : ""}" data-f="${esc(p.file)}">
+      <img loading="lazy" src="${thumb(p.file)}" alt="">
+      <div><div class="t">${esc(p.file)}</div>
+      <div class="m">${esc(p.taken || "")}${p.taken_guess ? " (파일 시각)" : ""}</div>
+      <div class="m">${p.lat != null ? [p.altitude != null ? `고도 ${p.altitude}m` : "", p.direction != null ? `${dirName(p.direction)} ${Math.round(p.direction)}°` : ""].filter(Boolean).join(" · ") : "위치 정보 없음"}</div></div></div>`;
+  $("list").innerHTML =
+    (D.gps.length ? `<div class="section">위치가 있는 사진 (시간순)</div>` + D.gps.map(row).join("") : "") +
+    (noGps.length ? `<div class="section">위치 정보가 없는 사진</div>` + noGps.map(row).join("") : "");
+  $("list").querySelectorAll(".item").forEach(el => el.onclick = () => openPhoto(el.dataset.f));
+}
+
+// ── 지도 준비: 키가 있으면 Google, 없거나 실패하면 OpenStreetMap ─────────
+function loadGoogle(key) {
+  return new Promise((resolve, reject) => {
+    window.__pmReady = resolve;
+    window.gm_authFailure = () => reject(new Error("Google 지도 인증 실패 — 키, Maps JavaScript API 사용 설정, 웹사이트 제한(localhost:5091)을 확인하세요"));
+    const s = document.createElement("script");
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=marker&language=ko&region=KR&loading=async&callback=__pmReady`;
+    s.onerror = () => reject(new Error("Google 지도 스크립트를 불러오지 못했습니다"));
+    document.head.appendChild(s);
+  });
+}
+
+async function initMap(key, mapId) {
+  if (key) {
+    try {
+      await loadGoogle(key);
+      $("map").style.display = "none"; $("gmap").style.display = "";
+      M.g = new google.maps.Map($("gmap"), {
+        center:{ lat:33.38, lng:126.55 }, zoom:10, mapId: mapId || "DEMO_MAP_ID",
+        mapTypeId:"hybrid", mapTypeControl:true, streetViewControl:true, fullscreenControl:true,
+      });
+      M.iw = new google.maps.InfoWindow();
+      M.kind = "google"; $("mapMode").textContent = "Google 지도";
+      window.gm_authFailure = () => { fallbackToOsm("Google 지도 인증 실패 — 키 설정과 웹사이트 제한(localhost:5091)을 확인하세요"); };
+      return;
+    } catch (e) { return fallbackToOsm(e.message); }
+  }
+  fallbackToOsm("GOOGLE_MAPS_API_KEY가 없어 OpenStreetMap으로 표시합니다");
+}
+
+function fallbackToOsm(msg) {
+  $("gmap").style.display = "none"; $("map").style.display = "";
+  $("mapMode").textContent = "OpenStreetMap"; $("mapMode").className = "badge warn";
+  $("maptag").textContent = msg; $("maptag").style.display = "";
+  if (typeof L === "undefined") { $("map").innerHTML = '<div class="empty">지도 라이브러리를 불러오지 못했습니다 (인터넷 연결 확인)</div>'; M.kind = "none"; return; }
+  if (!M.osm) {
+    M.osm = L.map("map").setView([33.38, 126.55], 10);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom:19, attribution:"© OpenStreetMap" }).addTo(M.osm);
+    M.osmLayer = L.layerGroup().addTo(M.osm);
+  }
+  const first = M.kind === "google"; M.kind = "osm";
+  if (first) drawMap();
+}
+
+// ── 마커(장소 묶음) + 촬영 방향 화살표 그리기 ───────────────────────────
+function markerEl(g) {
+  const el = document.createElement("div"); el.className = "pm";
+  el.style.backgroundImage = `url('${thumb(g.files[0])}')`;
+  if (g.files.length > 1) el.innerHTML = `<span>${g.files.length}</span>`;
+  return el;
+}
+
+function groupHtml(g) {
+  const photos = g.files.map(f => D.byFile[f]);
+  const first = photos[0], last = photos[photos.length - 1];
+  const near = (g.nearby || []).slice(0, 3).map(n => `<a href="${esc(n.url)}" target="_blank">${esc(n.title)}</a> ${n.distance_m.toLocaleString()}m`).join("<br>");
+  return `<div class="iw"><h4>사진 ${g.files.length}장 · ${esc(first.taken.slice(5, 16))}${g.files.length > 1 ? " ~ " + esc(last.taken.slice(11, 16)) : ""}</h4>
+    <div class="grid">${g.files.map(f => `<img src="${thumb(f)}" data-f="${esc(f)}" title="${esc(f)}">`).join("")}</div>
+    ${near ? `<div class="near"><b>근처 관광지 (비짓제주)</b><br>${near}</div>` : ""}</div>`;
+}
+
+function bindIwImages(root) { root.querySelectorAll("img[data-f]").forEach(i => i.onclick = () => openPhoto(i.dataset.f)); }
+
+function drawMap() {
+  if (M.kind === "google") return drawGoogle();
+  if (M.kind === "osm") return drawOsm();
+}
+
+function drawGoogle() {
+  M.gMarkers.forEach(m => m.map = null); M.gLines.forEach(l => l.setMap(null)); M.gMarkers = []; M.gLines = []; M.lineMap = {};
+  D.groups.forEach(g => {
+    const mk = new google.maps.marker.AdvancedMarkerElement({ map:M.g, position:{ lat:g.lat, lng:g.lng }, content:markerEl(g), title:`사진 ${g.files.length}장`, gmpClickable:true, zIndex:10 });
+    mk.addListener("click", () => {
+      M.iw.setContent(groupHtml(g)); M.iw.open({ map:M.g, anchor:mk });
+      google.maps.event.addListenerOnce(M.iw, "domready", () => bindIwImages(document));
+    });
+    M.gMarkers.push(mk);
+  });
+  const arrow = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale:3, strokeColor:"#e8702a", fillColor:"#e8702a", fillOpacity:1 };
+  D.gps.filter(p => p.direction != null).forEach(p => {
+    const line = new google.maps.Polyline({ path:[{ lat:p.lat, lng:p.lng }, offset(p.lat, p.lng, p.direction, DIR_LEN)],
+      strokeColor:"#e8702a", strokeOpacity:.9, strokeWeight:2, icons:[{ icon:arrow, offset:"100%" }], map: $("showDir").checked ? M.g : null, zIndex:5 });
+    line.addListener("click", () => openPhoto(p.file));
+    M.gLines.push(line); M.lineMap[p.file] = line;
+  });
+  fit();
+}
+
+function drawOsm() {
+  M.osmLayer.clearLayers(); M.lineMap = {};
+  D.groups.forEach(g => {
+    const icon = L.divIcon({ className:"", html:markerEl(g).outerHTML, iconSize:[56,56], iconAnchor:[28,28] });
+    L.marker([g.lat, g.lng], { icon, zIndexOffset:100 }).bindPopup(groupHtml(g), { maxWidth:320 })
+      .on("popupopen", e => bindIwImages(e.popup.getElement())).addTo(M.osmLayer);
+  });
+  if ($("showDir").checked) D.gps.filter(p => p.direction != null).forEach(p => {
+    const end = offset(p.lat, p.lng, p.direction, DIR_LEN);
+    const line = L.polyline([[p.lat, p.lng], [end.lat, end.lng]], { color:"#e8702a", weight:2 }).on("click", () => openPhoto(p.file)).addTo(M.osmLayer);
+    L.circleMarker([end.lat, end.lng], { radius:3, color:"#e8702a", fillOpacity:1 }).addTo(M.osmLayer);
+    M.lineMap[p.file] = line;
+  });
+  fit();
+}
+
+function fit() {
+  if (!D.gps.length) return;
+  // 사진이 한곳에 몰려 있어도 너무 확대되지 않도록 화살표 끝점까지 포함해서 맞춘다
+  const pts = D.gps.flatMap(p => [p, p.direction != null ? offset(p.lat, p.lng, p.direction, DIR_LEN) : p]);
+  if (M.kind === "google") {
+    const b = new google.maps.LatLngBounds(); pts.forEach(p => b.extend(p));
+    M.g.fitBounds(b, 80);
+    google.maps.event.addListenerOnce(M.g, "idle", () => { if (M.g.getZoom() > 19) M.g.setZoom(19); });
+  } else if (M.kind === "osm") {
+    M.osm.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lng])).pad(0.3), { maxZoom:18 });
+  }
+}
+
+function highlight(file) {
+  Object.entries(M.lineMap).forEach(([f, l]) => {
+    const on = f === file;
+    if (M.kind === "google") l.setOptions({ strokeWeight: on ? 5 : 2, strokeColor: on ? "#1d4ed8" : "#e8702a", zIndex: on ? 8 : 5 });
+    else l.setStyle({ weight: on ? 5 : 2, color: on ? "#1d4ed8" : "#e8702a" });
+  });
+  document.querySelectorAll(".item").forEach(el => el.classList.toggle("on", el.dataset.f === file));
+}
+
+// ── 크게 보기 ───────────────────────────────────────────────────────────
+function openPhoto(file) {
+  const p = D.byFile[file]; if (!p) return;
+  D.current = file; highlight(file);
+  if (p.lat != null && M.kind === "google") M.g.panTo({ lat:p.lat, lng:p.lng });
+  if (p.lat != null && M.kind === "osm") M.osm.panTo([p.lat, p.lng]);
+  $("lbImg").src = large(file);
+  const g = D.groups.find(g => g.files.includes(file));
+  const compass = p.direction != null ? `<svg class="compass" viewBox="-32 -32 64 64" aria-label="촬영 방향">
+      <circle r="30" fill="#f4f6f4" stroke="#d5dad7"/><text y="-19" text-anchor="middle" font-size="9" fill="#6b736f">N</text>
+      <g transform="rotate(${p.direction})"><path d="M0,-24 L6,4 L0,0 L-6,4 Z" fill="#e8702a"/></g></svg>` : "";
+  const rows = [
+    ["촬영 시각", `${p.taken}${p.tz ? " (" + p.tz + ")" : ""}${p.taken_guess ? " · 파일 수정 시각" : ""}`],
+    ["위치", p.lat != null ? `${p.lat}, ${p.lng}` : "없음"],
+    ["정확도", p.accuracy_m != null ? `±${p.accuracy_m}m` : ""],
+    ["고도", p.altitude != null ? `${p.altitude}m` : ""],
+    ["방향", p.direction != null ? `${dirName(p.direction)} (${p.direction}°)` : ""],
+    ["기기", p.device], ["크기", p.width ? `${p.width}×${p.height} · ${(p.size_kb / 1024).toFixed(1)}MB` : ""],
+  ].filter(r => r[1]);
+  const near = g?.nearby?.length ? `<h3 style="margin-top:16px">근처 관광지 <small style="color:var(--muted);font-weight:400">비짓제주</small></h3>
+      <div class="near-list">${g.nearby.map(n => `<a href="${esc(n.url)}" target="_blank">${esc(n.title)} <small>${n.distance_m.toLocaleString()}m</small><br><small>${esc(n.intro)}</small></a>`).join("")}</div>` : "";
+  $("lbInfo").innerHTML = `<h3>${esc(p.file)}</h3>${compass}
+    <table>${rows.map(([k, v]) => `<tr><td>${k}</td><td>${esc(v)}</td></tr>`).join("")}</table>
+    <p style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">
+      ${p.lat != null ? `<a class="btn" target="_blank" href="${gmapsLink(p)}">Google 지도에서 열기</a>` : ""}
+      <button class="btn" onclick="dlg.close()">닫기</button></p>${near}`;
+  if (!$("dlg").open) $("dlg").showModal();
+}
+function step(n) {
+  const list = D.photos.map(p => p.file); const i = list.indexOf(D.current);
+  openPhoto(list[(i + n + list.length) % list.length]);
+}
+$("prev").onclick = () => step(-1); $("next").onclick = () => step(1);
+document.addEventListener("keydown", e => { if (!$("dlg").open) return; if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+$("dlg").onclick = e => { if (e.target === $("dlg")) $("dlg").close(); };
+$("dlg").addEventListener("close", () => highlight(null));
+$("showDir").onchange = () => drawMap();
+$("reload").onclick = () => load();
+load();
+</script>
+</body>
+</html>

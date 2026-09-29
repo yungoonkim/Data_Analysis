@@ -1,0 +1,663 @@
+<title>제주 전력망 데이터북</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 한 줄 기둥(1080px) 문서. 질문 순서대로 절을 나누고, 각 절은 핵심 수치 → 차트 → 표 → 출처 순. 해저 연계선 도식이 시그니처 요소 */
+:root{
+  --bg:#f2f5f6; --surface:#fbfcfc; --ink:#122029; --ink-2:#3f505b; --muted:#66757f;
+  --line:#d3dde2; --line-2:#e5ebee; --accent:#0d6874; --accent-weak:#dcecee; --sea:#e3eef3;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7;
+  --c1:#86b6ef; --c2:#2a78d6; --c3:#104281;
+  --warn:#8a5200; --warn-weak:#fbf0dc;
+  --f-sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1418; --surface:#151d22; --ink:#e6edf1; --ink-2:#b8c5cd; --muted:#8a9aa5;
+  --line:#2b3841; --line-2:#1f2a31; --accent:#5cb9c5; --accent-weak:#15343a; --sea:#132730;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9;
+  --c1:#9ec5f4; --c2:#3987e5; --c3:#1c5cab; --warn:#f0b24d; --warn-weak:#2e2412; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1418; --surface:#151d22; --ink:#e6edf1; --ink-2:#b8c5cd; --muted:#8a9aa5;
+  --line:#2b3841; --line-2:#1f2a31; --accent:#5cb9c5; --accent-weak:#15343a; --sea:#132730;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9;
+  --c1:#9ec5f4; --c2:#3987e5; --c3:#1c5cab; --warn:#f0b24d; --warn-weak:#2e2412; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.3}
+h1{font-size:clamp(28px,4.2vw,40px);font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(21px,2.6vw,26px);font-weight:700;letter-spacing:-.01em}
+h3{font-size:16px;font-weight:600}
+p{margin:0;max-width:68ch}
+.num,td.n,th.n{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+
+/* header */
+header.top{display:grid;gap:14px;padding-block:8px 24px;border-bottom:1px solid var(--line)}
+.lede{color:var(--ink-2);font-size:16px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink-2);font-weight:500}
+
+/* key figures */
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));border-bottom:1px solid var(--line)}
+.fig{padding:18px 16px 18px 0;display:grid;gap:4px;align-content:start}
+.fig + .fig{padding-left:16px;border-left:1px solid var(--line-2)}
+.fig .k{font-size:13px;color:var(--muted)}
+.fig .v{font-size:28px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+.fig .v small{font-size:14px;font-weight:500;color:var(--ink-2);margin-left:3px}
+.fig .d{font-size:13px;color:var(--ink-2)}
+@media (max-width:640px){.fig + .fig{padding-left:0;border-left:0;border-top:1px solid var(--line-2)}}
+
+nav.toc{display:flex;flex-wrap:wrap;gap:6px 8px;padding-block:16px;font-size:13px}
+nav.toc a{padding:4px 10px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--ink-2);background:var(--surface)}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+
+section.q{display:grid;gap:18px;padding-block:40px 8px;border-top:1px solid var(--line);margin-top:24px;scroll-margin-top:12px}
+section.q:first-of-type{border-top:0;margin-top:0}
+.qhead{display:grid;gap:8px}
+.answer{font-size:16px;color:var(--ink);max-width:70ch}
+.answer strong{font-weight:600}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 18px 14px;display:grid;gap:10px;min-width:0;align-content:start}
+#tbl-spec td,#tbl-spec th{white-space:nowrap;padding:7px 8px}
+#tbl-line td,#tbl-dem td,#tbl-use25 td{white-space:nowrap}
+#tbl-2025{min-width:680px}
+.src{min-width:820px}
+.src td:nth-child(4){white-space:nowrap}
+#tbl-proc{min-width:460px}
+.panel .ptitle{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;align-items:baseline}
+.panel .ptitle h3{font-size:15px}
+.panel .unit{font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.legend i.ln{height:2px;width:14px;border-radius:1px}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--f-sans);font-size:11px;fill:var(--muted)}
+.chart .lbl{fill:var(--ink-2);font-size:11px;font-weight:500}
+.chart .grid{stroke:var(--line-2);stroke-width:1}
+.chart .axis{stroke:var(--line);stroke-width:1}
+.chart .zero{stroke:var(--muted);stroke-width:1}
+.hit{fill:transparent;cursor:crosshair}
+.note{font-size:12.5px;color:var(--muted);max-width:none}
+
+/* tables */
+.tw{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{font-weight:600;color:var(--ink-2);font-size:12.5px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.sum td{font-weight:600;border-top:1px solid var(--line)}
+td .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0}
+.neg{color:var(--warn)}
+details.tv{font-size:13px}
+details.tv summary{cursor:pointer;color:var(--accent);font-weight:500;width:max-content}
+details.tv[open] summary{margin-bottom:8px}
+
+/* cable diagram */
+.cable{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:18px;align-items:center}
+@media (max-width:900px){.cable{grid-template-columns:1fr}}
+.cable svg{width:100%;height:auto;display:block}
+.cable svg text{font-family:var(--f-sans);font-size:13px;fill:var(--ink-2)}
+.cable svg .place{font-weight:600;fill:var(--ink)}
+.cable svg .tag{font-family:var(--f-mono);font-size:12px;font-weight:500;fill:var(--ink)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:12px;padding:1px 7px;border-radius:999px;background:var(--accent-weak);color:var(--ink);font-weight:500;white-space:nowrap}
+
+/* caveats & sources */
+ol.cav{margin:0;padding-left:20px;display:grid;gap:8px;max-width:78ch}
+ol.cav li::marker{color:var(--muted);font-family:var(--f-mono);font-size:12px}
+.callout{background:var(--warn-weak);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 4px 4px 0;font-size:13.5px;color:var(--ink);max-width:78ch}
+.src td:first-child{white-space:nowrap;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.src td a{word-break:break-all}
+.tag-dl{font-size:11.5px;padding:1px 6px;border-radius:3px;border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
+.tag-no{border-color:var(--warn);color:var(--warn)}
+pre.tree{font-family:var(--f-mono);font-size:12.5px;line-height:1.6;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0;color:var(--ink-2)}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+
+/* tooltip */
+#tip{position:fixed;pointer-events:none;z-index:10;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:12.5px;line-height:1.5;box-shadow:0 4px 14px rgba(0,0,0,.12);min-width:150px;max-width:260px}
+#tip .t{font-weight:600;margin-bottom:2px}
+#tip .r{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+#tip .r span:first-child{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
+#tip i{width:8px;height:8px;border-radius:2px;display:inline-block}
+@media (prefers-reduced-motion:no-preference){.chart rect,.chart path{transition:opacity .15s}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">제주특별자치도 전력계통 · 공급·연계·소비 데이터 검토</div>
+  <h1>제주 전력망 데이터북</h1>
+  <p class="lede">제주가 쓰는 전기는 어디서 오고 어디에 쓰이는가. 섬 안의 발전소, 육지와 이어진 해저 HVDC 3회선, 용도별 소비를 공공데이터로 확인하고, 원자료 링크와 내려받은 파일 위치를 함께 정리했습니다.</p>
+  <div class="meta">
+    <span><b>기준 연도</b> 2025년 확정 실적</span>
+    <span><b>시간별 자료</b> 2026년 6월 30일까지</span>
+    <span><b>작성</b> 2026-09-29</span>
+    <span><b>단위</b> GWh = 1,000 MWh</span>
+  </div>
+</header>
+
+<div class="figs" id="figs"></div>
+
+<nav class="toc" aria-label="목차">
+  <a href="#gen">자체 발전량</a><a href="#mix">발전원별 발전량</a><a href="#import">육지 수전량</a><a href="#cable">해저 연계선 3회선</a><a href="#use">소비량·분야별 소비</a><a href="#sources">데이터 출처·파일</a><a href="#caveats">읽을 때 주의할 점</a>
+</nav>
+
+<!-- 1 -->
+<section class="q" id="gen">
+  <div class="qhead">
+    <div class="eyebrow">질문 1</div>
+    <h2>제주 자체 발전량은 얼마인가</h2>
+    <p class="answer" id="ans-gen"></p>
+  </div>
+  <div class="panel">
+    <div class="ptitle"><h3>2025년 발전원별 실적과 설비</h3><span class="unit">출처: 전력거래소 「2025년 연간 제주지역 전력계통 운영실적」</span></div>
+    <div class="tw"><table id="tbl-2025"></table></div>
+    <p class="note">연료원별 시장 거래량(송전단)으로 보면 2025년 LNG 1,466 GWh, 바이오중유 1,253 GWh이고 중유·경유 거래는 없습니다. 태양광 설비 777MW는 시장 참여 543MW와 PPA·BTM 234MW를 합친 값이며, 태양광 이용률(*)은 시장 참여분 기준입니다. 풍력·태양광 개소 수는 제주도 발전사업 허가현황(2024.12)입니다.</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="q" id="mix">
+  <div class="qhead">
+    <div class="eyebrow">질문 2</div>
+    <h2>풍력·태양광 등 발전원별로 얼마를 만드나</h2>
+    <p class="answer" id="ans-mix"></p>
+  </div>
+  <div class="panel">
+    <div class="ptitle"><h3>제주 전력 공급원 구성, 2019–2025</h3><span class="unit">GWh · 막대 위 숫자는 공급 합계</span></div>
+    <div class="legend" id="lg-mix"></div>
+    <div class="chart" id="ch-mix"></div>
+    <p class="note">2019·2020년 태양광은 시장 참여분만, 2021년부터는 PPA 태양광 포함(보고서 재집계 기준). 기타는 폐기물·바이오·소수력·매립가스·파력. 2019년은 보고서 합계(5,720.1)가 항목 합(5,712.7)보다 7.4 GWh 큽니다.</p>
+    <details class="tv"><summary>표로 보기</summary><div class="tw"><table id="tv-mix"></table></div></details>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="q" id="import">
+  <div class="qhead">
+    <div class="eyebrow">질문 3</div>
+    <h2>내륙에서 가져오는 전력은 얼마인가</h2>
+    <p class="answer" id="ans-import"></p>
+  </div>
+  <div class="panel">
+    <div class="ptitle"><h3>HVDC 연계선 연간 순수전량, 2016–2025</h3><span class="unit">GWh · 수전량 − 역송량</span></div>
+    <div class="legend" id="lg-hv"></div>
+    <div class="chart" id="ch-hv"></div>
+    <p class="note">시간별 수전전력(MW)을 합산한 값입니다. 2019–2023년, 2025년 합계는 전력거래소 연간보고서의 HVDC 실적과 일치합니다(2023년 차이 0.06 GWh). 2024년은 보고서보다 15.8 GWh 적습니다.</p>
+    <details class="tv"><summary>표로 보기</summary><div class="tw"><table id="tv-hv"></table></div></details>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="q" id="cable">
+  <div class="qhead">
+    <div class="eyebrow">질문 4</div>
+    <h2>해저 전력케이블은 몇 개이고, 케이블별로 얼마를 받나</h2>
+    <p class="answer" id="ans-cable"></p>
+  </div>
+  <div class="panel">
+    <div class="cable">
+      <svg viewBox="0 0 520 360" role="img" aria-labelledby="cab-t">
+        <title id="cab-t">육지(진도·해남·완도)와 제주를 잇는 HVDC 해저 연계선 3회선 개념도</title>
+        <rect x="0" y="0" width="520" height="360" rx="6" style="fill:var(--sea)"/>
+        <path d="M0 0 H520 V70 C470 82 430 64 390 78 C350 92 320 70 280 80 C240 90 200 70 160 84 C120 96 70 74 0 88 Z" style="fill:var(--surface);stroke:var(--line)"/>
+        <text x="16" y="28" class="eyebrow" style="font-size:11px;letter-spacing:.08em;fill:var(--muted)">전라남도</text>
+        <ellipse cx="270" cy="298" rx="200" ry="50" style="fill:var(--surface);stroke:var(--line)"/>
+        <text x="270" y="318" text-anchor="middle" style="font-size:11px;letter-spacing:.08em;fill:var(--muted)">제주도</text>
+        <!-- #2 진도 → 서제주(해안동) -->
+        <path d="M110 70 C120 150 150 210 175 262" style="fill:none;stroke:var(--c2);stroke-width:8;stroke-linecap:round"/>
+        <!-- #1 해남 → 제주(삼양) -->
+        <path d="M265 72 C262 150 262 210 262 250" style="fill:none;stroke:var(--c1);stroke-width:6;stroke-linecap:round"/>
+        <!-- #3 완도 → 동제주 -->
+        <path d="M410 70 C400 150 380 210 358 258" style="fill:none;stroke:var(--c3);stroke-width:4;stroke-linecap:round"/>
+        <g>
+          <rect x="98" y="58" width="24" height="16" rx="2" style="fill:var(--ink)"/><text x="110" y="50" text-anchor="middle" class="place">진도</text>
+          <rect x="253" y="60" width="24" height="16" rx="2" style="fill:var(--ink)"/><text x="265" y="52" text-anchor="middle" class="place">해남</text>
+          <rect x="398" y="58" width="24" height="16" rx="2" style="fill:var(--ink)"/><text x="410" y="50" text-anchor="middle" class="place">완도</text>
+          <circle cx="175" cy="264" r="7" style="fill:var(--ink)"/><text x="175" y="290" text-anchor="middle" class="place">서제주</text>
+          <circle cx="262" cy="252" r="7" style="fill:var(--ink)"/><text x="262" y="278" text-anchor="middle" class="place">제주(삼양)</text>
+          <circle cx="358" cy="260" r="7" style="fill:var(--ink)"/><text x="360" y="286" text-anchor="middle" class="place">동제주</text>
+        </g>
+        <g>
+          <text x="84" y="168" class="tag" text-anchor="end">#2</text><text x="84" y="184" text-anchor="end">400MW</text>
+          <text x="280" y="168" class="tag">#1</text><text x="280" y="184">300MW</text>
+          <text x="420" y="168" class="tag">#3</text><text x="420" y="184">200MW</text>
+        </g>
+        <text x="16" y="348" style="font-size:11px;fill:var(--muted)">선 굵기 = 정격용량 · 위치는 개념도</text>
+      </svg>
+      <div class="tw"><table id="tbl-spec"></table></div>
+    </div>
+    <p class="note">LCC = 전류형, VSC = 전압형(국내 첫 적용, 역송 전환이 빠름). #2는 2013년 7월 임시 상업운전 후 2014년 4월 전 설비 운전. #1은 2개 회선(케이블 2조). 규격 출처: 한국전력신문(#2, 2015.10), 전기신문(#1, 2009.5), 일렉트릭파워·전기신문(#3, 2024.12). 2025년 여름 최대전력 시점의 연계선 공급능력은 600MW(2024년 400MW)였습니다(전력거래소).</p>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle"><h3>연계선별 수전·역송 실적</h3><span class="unit">GWh · 시간별 자료 합산 · 이용률 = 순수전량 ÷ (정격 × 연간시간)</span></div>
+    <div class="tw"><table id="tbl-line"></table></div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="ptitle"><h3>연계선별 월간 순수전량</h3><span class="unit">GWh · 2025.01–2026.06 · 0 아래는 제주→육지 역송 초과</span></div>
+      <div class="legend" id="lg-mo"></div>
+      <div class="chart" id="ch-mo"></div>
+      <details class="tv"><summary>표로 보기</summary><div class="tw"><table id="tv-mo"></table></div></details>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><h3>하루 중 공급 구성, 2025년 시간대 평균</h3><span class="unit">MW · 선은 계통수요</span></div>
+      <div class="legend" id="lg-hr"></div>
+      <div class="chart" id="ch-hr"></div>
+      <p class="note">발전은 시장 전력거래량(송전단)입니다. 계통수요와 쌓인 면 사이의 차이는 주로 PPA 태양광 등 시장 밖 발전분입니다.</p>
+      <details class="tv"><summary>표로 보기</summary><div class="tw"><table id="tv-hr"></table></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="q" id="use">
+  <div class="qhead">
+    <div class="eyebrow">질문 5</div>
+    <h2>제주 전력 소비량과 분야별 소비량은</h2>
+    <p class="answer" id="ans-use"></p>
+  </div>
+  <div class="panel">
+    <div class="ptitle"><h3>용도별 판매전력량 구성, 2025년 제주와 전국</h3><span class="unit">% · 한국전력통계(EPSIS)</span></div>
+    <div class="legend" id="lg-share"></div>
+    <div class="chart" id="ch-share"></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <div class="ptitle"><h3>제주 용도별 판매전력량, 2003–2025</h3><span class="unit">GWh</span></div>
+      <div class="legend" id="lg-use"></div>
+      <div class="chart" id="ch-use"></div>
+      <details class="tv"><summary>표로 보기</summary><div class="tw"><table id="tv-use"></table></div></details>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><h3>2025년 제주 소비 세부</h3><span class="unit">GWh</span></div>
+      <div class="tw"><table id="tbl-use25"></table></div>
+      <h3 style="margin-top:6px">제조업 세부 상위 업종</h3>
+      <div class="tw"><table id="tbl-mfg"></table></div>
+      <h3 style="margin-top:6px">공급전압별 판매실적(한전, 2025)</h3>
+      <div class="tw"><table id="tbl-volt"></table></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle"><h3>계통수요(시간별 자료 기준) 연도별 요약</h3><span class="unit">최대전력은 시간 평균값 · 출처: 전력거래소 시간별 제주전력수요</span></div>
+    <div class="tw"><table id="tbl-dem"></table></div>
+  </div>
+</section>
+
+<!-- sources -->
+<section class="q" id="sources">
+  <div class="qhead">
+    <div class="eyebrow">데이터</div>
+    <h2>데이터 출처와 내려받은 파일</h2>
+    <p class="answer">원자료는 모두 <span class="mono">제주자치도전력분석/data/raw/</span> 아래 주제별 폴더에 저장했고, 가공 결과는 <span class="mono">data/processed/</span>, 가공 스크립트는 <span class="mono">data/scripts/process_jeju_power.py</span>에 있습니다. 파일명 앞 코드(S01, D01 …)가 아래 표의 코드와 같습니다.</p>
+  </div>
+  <div class="panel">
+    <div class="tw"><table class="src" id="tbl-src"></table></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>폴더 구조</h3>
+<pre class="tree">제주자치도전력분석/
+├─ 제주전력망_데이터북.html
+└─ data/
+   ├─ raw/
+   │  ├─ 01_발전량_연료원별/          S01 S02 S05 S08 S12
+   │  ├─ 02_HVDC_해저연계선/          S03 (2016–2026.6)
+   │  ├─ 03_전력수요_수급/            D01 S04
+   │  ├─ 04_전력소비_용도별/          D02 D03 D06
+   │  ├─ 05_발전설비_신재생_출력제어/  S06 S07 S09 S10 S11 S13
+   │  ├─ 06_KPX_제주계통운영실적_연간보고서/  R01 (2015–2025)
+   │  ├─ _manifest/                   파일별 원본 URL 기록
+   │  └─ _원본zip/                    내려받은 zip 원본
+   ├─ processed/                      연도·연계선·용도별 요약 CSV
+   └─ scripts/process_jeju_power.py</pre>
+    </div>
+    <div class="panel">
+      <h3>가공 결과 파일(data/processed)</h3>
+      <div class="tw"><table id="tbl-proc"></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- caveats -->
+<section class="q" id="caveats">
+  <div class="qhead">
+    <div class="eyebrow">검토 메모</div>
+    <h2>읽을 때 주의할 점</h2>
+  </div>
+  <ol class="cav">
+    <li><b>기준이 세 가지입니다.</b> 전력거래소 운영실적은 HVDC를 포함한 공급 실적(발전단), 연료원별 시장 거래량은 시장 참여 발전기의 송전단 값, 한국전력통계 판매전력량은 소비자에게 판 전력입니다. 2025년 공급 6,607.8 GWh, 계통수요 6,438.1 GWh, 판매량 6,230.4 GWh처럼 값이 서로 다릅니다.</li>
+    <li><b>태양광 범위.</b> 운영실적 보고서는 2021년분부터 PPA 태양광을 포함해 재집계했습니다. 자가소비(BTM) 태양광은 계량되지 않아 발전량에 없고, 대신 계통수요를 낮추는 형태로 나타납니다.</li>
+    <li><b>재생에너지 입찰제(2024년 6월~).</b> 입찰에 참여한 풍력·태양광은 시장 거래량 자료에서 ‘급전가능 재생에너지’로 따로 분류됩니다. 그래서 연료원별 거래량의 ‘풍력’은 2025년 75.5 GWh에 불과합니다. 발전원별 풍력 실적은 운영실적 보고서 값(793.9 GWh)을 쓰세요.</li>
+    <li><b>HVDC 부호.</b> 연계선 수전전력의 음수는 제주에서 육지로 보낸 역송입니다. 2022년 이전 파일은 kW 단위(천 단위 쉼표 포함)라 1,000으로 나눠 MW로 맞췄습니다.</li>
+    <li><b>2024년 HVDC 차이.</b> 시간별 합계(1,938.0 GWh)가 보고서(1,953.7 GWh)보다 15.8 GWh 적습니다. 시간별 파일에 #3 연계선 자료가 2024년 11월부터만 있어, 시운전 기간 수전분이 빠진 것으로 추정됩니다.</li>
+    <li><b>EPSIS 원자료 오류.</b> 시도별 용도별 판매전력량에서 제주 2014년·2016년 ‘합계’가 세부 항목 합과 맞지 않습니다(2016년은 업무용이 두 번 더해진 값). 이 페이지의 합계는 주거용+업무용+산업용으로 다시 계산했습니다.</li>
+    <li><b>용도별과 계약종별은 다릅니다.</b> 여기의 분야 구분은 한국전력통계 용도별(주거용·업무용·산업용)입니다. 주택용·일반용·교육용·산업용·농사용·가로등·심야 같은 계약종별 제주 자료는 한전 ‘시군구별 전력판매량’(월별 엑셀)에 있으나, 내려받기 전에 이용 목적 설문을 제출해야 해서 이번에는 링크만 남겼습니다.</li>
+    <li><b>2026년 자료.</b> HVDC·수요 시간별 자료는 2026년 6월 30일까지입니다. 2026년 수치는 상반기 값입니다.</li>
+  </ol>
+</section>
+
+<footer>
+  작성 2026-09-29 · 원자료: 공공데이터포털(data.go.kr), 전력거래소(kpx.or.kr), 전력통계정보시스템 EPSIS(epsis.kpx.or.kr), 한국전력공사 · 차트의 모든 값은 data/processed 파일에서 다시 계산할 수 있습니다.
+</footer>
+</div>
+<div id="tip" hidden></div>
+
+<script id="data" type="application/json">{"mix": [{"y": 2019, "HVDC": 1807.9, "기력": 1852.1, "복합": 965.3, "태양광": 252.4, "풍력": 548.5, "내연": 265.5, "기타": 21.1, "total": 5720.1, "self": 3912.1, "share": 31.6}, {"y": 2020, "HVDC": 1689.6, "기력": 1366.9, "복합": 1490.5, "태양광": 327.0, "풍력": 580.4, "내연": 124.7, "기타": 98.8, "total": 5677.8, "self": 3988.3, "share": 29.8}, {"y": 2021, "HVDC": 1621.2, "기력": 1413.6, "복합": 1660.0, "태양광": 572.9, "풍력": 538.6, "내연": 191.6, "기타": 101.8, "total": 6099.8, "self": 4478.5, "share": 26.6}, {"y": 2022, "HVDC": 1714.3, "기력": 1587.5, "복합": 1578.3, "태양광": 651.3, "풍력": 576.2, "내연": 274.1, "기타": 96.0, "total": 6477.7, "self": 4763.4, "share": 26.5}, {"y": 2023, "HVDC": 1768.3, "기력": 1657.9, "복합": 1704.9, "태양광": 653.0, "풍력": 509.3, "내연": 99.5, "기타": 97.0, "total": 6490.0, "self": 4721.7, "share": 27.2}, {"y": 2024, "HVDC": 1953.7, "기력": 1454.9, "복합": 1752.7, "태양광": 638.8, "풍력": 664.1, "내연": 41.4, "기타": 90.1, "total": 6595.7, "self": 4642.0, "share": 29.6}, {"y": 2025, "HVDC": 2062.2, "기력": 1352.6, "복합": 1506.6, "태양광": 799.6, "풍력": 793.9, "내연": 11.6, "기타": 81.3, "total": 6607.8, "self": 4545.6, "share": 31.2}], "hvdcYear": [{"y": 2016, "#1": {"net": 705.8, "in": 705.8, "out": -0.0, "max": 128.9, "rev_h": 0, "hours": 8784}, "#2": {"net": 1296.8, "in": 1296.8, "out": -0.0, "max": 251.4, "rev_h": 0, "hours": 8784}}, {"y": 2017, "#1": {"net": 712.2, "in": 712.2, "out": -0.0, "max": 121.9, "rev_h": 0, "hours": 8760}, "#2": {"net": 1585.1, "in": 1585.1, "out": -0.0, "max": 262.0, "rev_h": 0, "hours": 8760}}, {"y": 2018, "#1": {"net": 623.6, "in": 623.6, "out": -0.0, "max": 123.7, "rev_h": 0, "hours": 8760}, "#2": {"net": 1648.4, "in": 1648.4, "out": -0.0, "max": 242.3, "rev_h": 0, "hours": 8760}}, {"y": 2019, "#1": {"net": 430.6, "in": 430.7, "out": 0.1, "max": 147.7, "rev_h": 51, "hours": 8760}, "#2": {"net": 1377.3, "in": 1377.3, "out": -0.0, "max": 242.5, "rev_h": 0, "hours": 8760}}, {"y": 2020, "#1": {"net": 608.8, "in": 609.0, "out": 0.2, "max": 154.2, "rev_h": 8, "hours": 8784}, "#2": {"net": 1080.7, "in": 1080.7, "out": -0.0, "max": 235.7, "rev_h": 0, "hours": 8784}}, {"y": 2021, "#1": {"net": 524.7, "in": 534.2, "out": 9.6, "max": 124.7, "rev_h": 237, "hours": 8760}, "#2": {"net": 1096.6, "in": 1096.6, "out": 0.0, "max": 235.4, "rev_h": 3, "hours": 8760}}, {"y": 2022, "#1": {"net": 553.2, "in": 557.7, "out": 4.5, "max": 114.2, "rev_h": 102, "hours": 8760}, "#2": {"net": 1161.1, "in": 1161.1, "out": -0.0, "max": 230.9, "rev_h": 0, "hours": 8760}}, {"y": 2023, "#1": {"net": 558.6, "in": 580.1, "out": 21.5, "max": 114.7, "rev_h": 397, "hours": 8760}, "#2": {"net": 1209.6, "in": 1209.6, "out": 0.0, "max": 231.8, "rev_h": 4, "hours": 8760}}, {"y": 2024, "#1": {"net": 610.1, "in": 631.0, "out": 20.9, "max": 120.0, "rev_h": 468, "hours": 8784}, "#2": {"net": 1305.0, "in": 1305.0, "out": 0.0, "max": 246.9, "rev_h": 27, "hours": 8784}, "#3": {"net": 22.9, "in": 25.2, "out": 2.3, "max": 69.7, "rev_h": 129, "hours": 1464}}, {"y": 2025, "#1": {"net": 249.6, "in": 383.5, "out": 134.0, "max": 140.4, "rev_h": 3377, "hours": 8760}, "#2": {"net": 1374.4, "in": 1374.4, "out": 0.0, "max": 296.8, "rev_h": 4, "hours": 8760}, "#3": {"net": 438.2, "in": 459.5, "out": 21.2, "max": 177.5, "rev_h": 597, "hours": 8760}}, {"y": 2026, "#1": {"net": 10.9, "in": 81.5, "out": 70.6, "max": 134.7, "rev_h": 2391, "hours": 4344}, "#2": {"net": 687.5, "in": 687.5, "out": 0.0, "max": 280.4, "rev_h": 3, "hours": 4344}, "#3": {"net": 195.2, "in": 228.8, "out": 33.6, "max": 160.9, "rev_h": 625, "hours": 4344}}], "hvdcTotal": {"2016": {"net": 2002.6, "peak": 348.2}, "2017": {"net": 2297.3, "peak": 357.7}, "2018": {"net": 2272.0, "peak": 359.3}, "2019": {"net": 1807.9, "peak": 358.1}, "2020": {"net": 1689.6, "peak": 349.8}, "2021": {"net": 1621.2, "peak": 353.9}, "2022": {"net": 1714.3, "peak": 329.9}, "2023": {"net": 1768.2, "peak": 346.4}, "2024": {"net": 1938.0, "peak": 387.4}, "2025": {"net": 2062.2, "peak": 557.0}, "2026": {"net": 893.6, "peak": 556.4}}, "hvdcMonth": [{"ym": "2025.01", "#1": 54.0, "#2": 107.4, "#3": 23.9}, {"ym": "2025.02", "#1": 34.2, "#2": 94.2, "#3": 15.5}, {"ym": "2025.03", "#1": 17.1, "#2": 113.9, "#3": 29.4}, {"ym": "2025.04", "#1": -33.5, "#2": 114.7, "#3": 27.1}, {"ym": "2025.05", "#1": -32.0, "#2": 125.7, "#3": 38.5}, {"ym": "2025.06", "#1": -2.7, "#2": 114.5, "#3": 36.4}, {"ym": "2025.07", "#1": 65.0, "#2": 126.0, "#3": 45.2}, {"ym": "2025.08", "#1": 81.9, "#2": 136.0, "#3": 59.2}, {"ym": "2025.09", "#1": 57.0, "#2": 128.2, "#3": 56.9}, {"ym": "2025.10", "#1": 6.6, "#2": 121.7, "#3": 43.6}, {"ym": "2025.11", "#1": -14.0, "#2": 76.2, "#3": 36.1}, {"ym": "2025.12", "#1": 16.1, "#2": 115.8, "#3": 26.3}, {"ym": "2026.01", "#1": 38.3, "#2": 118.5, "#3": 39.5}, {"ym": "2026.02", "#1": 9.6, "#2": 106.7, "#3": 25.8}, {"ym": "2026.03", "#1": -8.4, "#2": 120.6, "#3": 28.7}, {"ym": "2026.04", "#1": -19.4, "#2": 112.2, "#3": 30.4}, {"ym": "2026.05", "#1": -16.5, "#2": 113.3, "#3": 29.3}, {"ym": "2026.06", "#1": 7.3, "#2": 116.2, "#3": 41.4}], "hourly": [{"h": 1, "demand": 701.9, "HVDC": 262.2, "기력": 145.1, "복합": 182.4, "태양광": 0.0, "재생E": 85.6, "기타": 9.7}, {"h": 2, "demand": 662.9, "HVDC": 254.2, "기력": 144.0, "복합": 154.4, "태양광": 0.0, "재생E": 84.3, "기타": 9.7}, {"h": 3, "demand": 637.4, "HVDC": 239.5, "기력": 143.7, "복합": 143.6, "태양광": 0.0, "재생E": 85.1, "기타": 9.7}, {"h": 4, "demand": 622.7, "HVDC": 227.6, "기력": 143.4, "복합": 138.9, "태양광": 0.0, "재생E": 87.5, "기타": 9.7}, {"h": 5, "demand": 621.3, "HVDC": 225.6, "기력": 142.8, "복합": 137.4, "태양광": 0.0, "재생E": 90.3, "기타": 9.7}, {"h": 6, "demand": 635.6, "HVDC": 228.6, "기력": 142.8, "복합": 139.0, "태양광": 0.1, "재생E": 99.8, "기타": 9.6}, {"h": 7, "demand": 665.1, "HVDC": 251.4, "기력": 144.1, "복합": 144.7, "태양광": 4.6, "재생E": 94.8, "기타": 9.6}, {"h": 8, "demand": 698.4, "HVDC": 255.3, "기력": 145.2, "복합": 150.0, "태양광": 25.2, "재생E": 97.1, "기타": 9.7}, {"h": 9, "demand": 725.5, "HVDC": 234.0, "기력": 144.5, "복합": 144.7, "태양광": 66.5, "재생E": 111.0, "기타": 9.6}, {"h": 10, "demand": 734.1, "HVDC": 196.4, "기력": 141.8, "복합": 127.0, "태양광": 114.4, "재생E": 130.6, "기타": 9.7}, {"h": 11, "demand": 732.7, "HVDC": 171.1, "기력": 137.9, "복합": 107.9, "태양광": 152.1, "재생E": 140.4, "기타": 9.7}, {"h": 12, "demand": 723.8, "HVDC": 152.0, "기력": 134.2, "복합": 98.1, "태양광": 172.7, "재생E": 144.5, "기타": 9.5}, {"h": 13, "demand": 713.4, "HVDC": 142.2, "기력": 130.8, "복합": 94.5, "태양광": 177.8, "재생E": 146.0, "기타": 9.4}, {"h": 14, "demand": 725.9, "HVDC": 153.5, "기력": 132.0, "복합": 97.3, "태양광": 170.3, "재생E": 150.5, "기타": 9.4}, {"h": 15, "demand": 735.3, "HVDC": 172.0, "기력": 135.2, "복합": 105.6, "태양광": 150.2, "재생E": 148.9, "기타": 9.5}, {"h": 16, "demand": 753.1, "HVDC": 200.7, "기력": 139.2, "복합": 130.3, "태양광": 118.3, "재생E": 139.1, "기타": 9.6}, {"h": 17, "demand": 787.9, "HVDC": 243.7, "기력": 144.9, "복합": 176.4, "태양광": 74.6, "재생E": 120.6, "기타": 9.7}, {"h": 18, "demand": 829.9, "HVDC": 284.8, "기력": 149.1, "복합": 229.1, "태양광": 34.0, "재생E": 103.9, "기타": 9.7}, {"h": 19, "demand": 855.5, "HVDC": 301.0, "기력": 149.7, "복합": 262.2, "태양광": 10.2, "재생E": 103.0, "기타": 9.7}, {"h": 20, "demand": 865.8, "HVDC": 305.7, "기력": 150.1, "복합": 273.3, "태양광": 2.8, "재생E": 104.1, "기타": 9.8}, {"h": 21, "demand": 850.2, "HVDC": 298.8, "기력": 149.6, "복합": 271.1, "태양광": 1.7, "재생E": 99.5, "기타": 9.8}, {"h": 22, "demand": 817.7, "HVDC": 289.0, "기력": 148.3, "복합": 256.8, "태양광": 1.0, "재생E": 93.8, "기타": 9.8}, {"h": 23, "demand": 789.2, "HVDC": 285.8, "기력": 147.4, "복합": 237.7, "태양광": 0.2, "재생E": 90.0, "기타": 9.8}, {"h": 24, "demand": 753.2, "HVDC": 274.5, "기력": 146.5, "복합": 214.9, "태양광": 0.0, "재생E": 90.2, "기타": 9.7}], "month2025": [{"month": 1, "계통수요": 590.2, "HVDC#1": 54.0, "HVDC#2": 107.4, "HVDC#3": 23.9, "HVDC합계": 185.2, "LNG": 147.2, "바이오중유": 119.6, "태양광(시장)": 29.2, "풍력(시장)": 26.6, "급전가능재생E(입찰)": 63.2, "기타(폐기물·바이오 등)": 6.3, "시장발전합계": 392.2}, {"month": 2, "계통수요": 549.3, "HVDC#1": 34.2, "HVDC#2": 94.2, "HVDC#3": 15.5, "HVDC합계": 143.9, "LNG": 134.9, "바이오중유": 106.2, "태양광(시장)": 31.9, "풍력(시장)": 30.7, "급전가능재생E(입찰)": 80.6, "기타(폐기물·바이오 등)": 9.1, "시장발전합계": 393.4}, {"month": 3, "계통수요": 532.0, "HVDC#1": 17.1, "HVDC#2": 113.9, "HVDC#3": 29.4, "HVDC합계": 160.3, "LNG": 115.5, "바이오중유": 105.8, "태양광(시장)": 38.3, "풍력(시장)": 2.8, "급전가능재생E(입찰)": 90.4, "기타(폐기물·바이오 등)": 6.8, "시장발전합계": 359.6}, {"month": 4, "계통수요": 470.1, "HVDC#1": -33.5, "HVDC#2": 114.7, "HVDC#3": 27.1, "HVDC합계": 108.4, "LNG": 118.9, "바이오중유": 87.5, "태양광(시장)": 53.5, "풍력(시장)": 2.7, "급전가능재생E(입찰)": 79.7, "기타(폐기물·바이오 등)": 9.8, "시장발전합계": 352.1}, {"month": 5, "계통수요": 465.0, "HVDC#1": -32.0, "HVDC#2": 125.7, "HVDC#3": 38.5, "HVDC합계": 132.2, "LNG": 103.9, "바이오중유": 96.3, "태양광(시장)": 48.3, "풍력(시장)": 2.6, "급전가능재생E(입찰)": 66.9, "기타(폐기물·바이오 등)": 5.8, "시장발전합계": 323.8}, {"month": 6, "계통수요": 487.4, "HVDC#1": -2.7, "HVDC#2": 114.6, "HVDC#3": 36.4, "HVDC합계": 148.2, "LNG": 169.0, "바이오중유": 54.2, "태양광(시장)": 44.6, "풍력(시장)": 1.2, "급전가능재생E(입찰)": 51.4, "기타(폐기물·바이오 등)": 10.0, "시장발전합계": 330.3}, {"month": 7, "계통수요": 622.7, "HVDC#1": 65.0, "HVDC#2": 126.0, "HVDC#3": 45.2, "HVDC합계": 236.2, "LNG": 155.4, "바이오중유": 87.6, "태양광(시장)": 52.0, "풍력(시장)": 1.7, "급전가능재생E(입찰)": 71.7, "기타(폐기물·바이오 등)": 6.1, "시장발전합계": 374.5}, {"month": 8, "계통수요": 658.2, "HVDC#1": 81.9, "HVDC#2": 136.0, "HVDC#3": 59.2, "HVDC합계": 277.2, "LNG": 140.5, "바이오중유": 129.6, "태양광(시장)": 47.6, "풍력(시장)": 0.6, "급전가능재생E(입찰)": 42.2, "기타(폐기물·바이오 등)": 4.4, "시장발전합계": 364.8}, {"month": 9, "계통수요": 581.5, "HVDC#1": 57.0, "HVDC#2": 128.2, "HVDC#3": 56.9, "HVDC합계": 242.0, "LNG": 113.3, "바이오중유": 118.2, "태양광(시장)": 30.8, "풍력(시장)": 1.0, "급전가능재생E(입찰)": 54.6, "기타(폐기물·바이오 등)": 7.1, "시장발전합계": 324.9}, {"month": 10, "계통수요": 492.9, "HVDC#1": 6.6, "HVDC#2": 121.7, "HVDC#3": 43.6, "HVDC합계": 172.0, "LNG": 82.0, "바이오중유": 102.0, "태양광(시장)": 32.4, "풍력(시장)": 1.4, "급전가능재생E(입찰)": 82.7, "기타(폐기물·바이오 등)": 9.2, "시장발전합계": 309.6}, {"month": 11, "계통수요": 457.8, "HVDC#1": -14.0, "HVDC#2": 76.2, "HVDC#3": 36.1, "HVDC합계": 98.4, "LNG": 101.0, "바이오중유": 114.7, "태양광(시장)": 30.6, "풍력(시장)": 2.0, "급전가능재생E(입찰)": 91.2, "기타(폐기물·바이오 등)": 8.3, "시장발전합계": 347.8}, {"month": 12, "계통수요": 531.1, "HVDC#1": 16.1, "HVDC#2": 115.8, "HVDC#3": 26.3, "HVDC합계": 158.2, "LNG": 84.9, "바이오중유": 131.1, "태양광(시장)": 26.7, "풍력(시장)": 2.3, "급전가능재생E(입찰)": 113.6, "기타(폐기물·바이오 등)": 1.9, "시장발전합계": 360.4}], "demand": [{"y": 2007, "gwh": 3350.2, "peak": 551.3, "when": "2007-08-03 14시", "avg": 382.4, "min": 92.3, "hours": 8760}, {"y": 2008, "gwh": 3502.8, "peak": 552.6, "when": "2008-07-31 21시", "avg": 398.8, "min": 287.5, "hours": 8784}, {"y": 2009, "gwh": 3679.5, "peak": 578.0, "when": "2009-07-20 15시", "avg": 420.0, "min": 291.5, "hours": 8760}, {"y": 2010, "gwh": 3895.9, "peak": 624.5, "when": "2010-08-02 21시", "avg": 444.7, "min": 309.7, "hours": 8760}, {"y": 2011, "gwh": 4033.7, "peak": 624.3, "when": "2011-07-28 15시", "avg": 460.5, "min": 321.3, "hours": 8760}, {"y": 2012, "gwh": 4207.8, "peak": 669.2, "when": "2012-08-17 21시", "avg": 479.0, "min": 219.2, "hours": 8784}, {"y": 2013, "gwh": 4462.3, "peak": 716.2, "when": "2013-08-09 14시", "avg": 509.4, "min": 353.7, "hours": 8760}, {"y": 2014, "gwh": 4580.3, "peak": 715.2, "when": "2014-01-09 19시", "avg": 522.9, "min": 373.5, "hours": 8760}, {"y": 2015, "gwh": 4791.5, "peak": 762.3, "when": "2015-02-09 19시", "avg": 547.0, "min": 384.1, "hours": 8760}, {"y": 2016, "gwh": 5127.5, "peak": 839.7, "when": "2016-08-12 18시", "avg": 583.7, "min": 233.2, "hours": 8784}, {"y": 2017, "gwh": 5422.0, "peak": 921.4, "when": "2017-07-25 14시", "avg": 619.0, "min": 415.0, "hours": 8760}, {"y": 2018, "gwh": 5675.6, "peak": 950.4, "when": "2018-01-26 19시", "avg": 647.9, "min": 431.5, "hours": 8760}, {"y": 2019, "gwh": 5719.0, "peak": 965.8, "when": "2019-08-08 18시", "avg": 652.9, "min": 451.0, "hours": 8760}, {"y": 2020, "gwh": 5677.8, "peak": 1008.6, "when": "2020-08-14 18시", "avg": 646.4, "min": 445.8, "hours": 8784}, {"y": 2021, "gwh": 5871.1, "peak": 1012.1, "when": "2021-08-06 19시", "avg": 670.2, "min": 378.5, "hours": 8760}, {"y": 2022, "gwh": 6213.0, "peak": 1104.0, "when": "2022-08-11 20시", "avg": 709.2, "min": 395.9, "hours": 8760}, {"y": 2023, "gwh": 6321.2, "peak": 1096.4, "when": "2023-08-03 19시", "avg": 721.6, "min": 464.8, "hours": 8760}, {"y": 2024, "gwh": 6460.9, "peak": 1178.6, "when": "2024-08-05 14시", "avg": 735.5, "min": 498.3, "hours": 8784}, {"y": 2025, "gwh": 6438.1, "peak": 1141.3, "when": "2025-08-26 18시", "avg": 734.9, "min": 442.9, "hours": 8760}, {"y": 2026, "gwh": 3049.1, "peak": 1034.7, "when": "2026-01-22 11시", "avg": 701.9, "min": 415.1, "hours": 4344}], "useJeju": [{"y": 2003, "주거용": 429.8, "공공용": 134.5, "서비스업": 1039.3, "농림어업": 630.0, "광업·제조업": 130.7, "제조업": 123.1, "광업": 7.6, "total": 2364.2, "raw": 2364.2}, {"y": 2004, "주거용": 472.8, "공공용": 143.4, "서비스업": 1116.4, "농림어업": 694.8, "광업·제조업": 134.8, "제조업": 125.2, "광업": 9.6, "total": 2562.2, "raw": 2562.2}, {"y": 2005, "주거용": 503.0, "공공용": 154.2, "서비스업": 1223.0, "농림어업": 749.8, "광업·제조업": 138.1, "제조업": 128.8, "광업": 9.3, "total": 2768.1, "raw": 2768.1}, {"y": 2006, "주거용": 522.3, "공공용": 164.0, "서비스업": 1305.9, "농림어업": 760.0, "광업·제조업": 146.8, "제조업": 137.7, "광업": 9.0, "total": 2898.9, "raw": 2898.9}, {"y": 2007, "주거용": 535.2, "공공용": 178.1, "서비스업": 1361.6, "농림어업": 810.6, "광업·제조업": 152.8, "제조업": 142.5, "광업": 10.3, "total": 3038.3, "raw": 3038.3}, {"y": 2008, "주거용": 551.0, "공공용": 189.8, "서비스업": 1444.7, "농림어업": 842.0, "광업·제조업": 155.8, "제조업": 146.1, "광업": 9.6, "total": 3183.2, "raw": 3183.2}, {"y": 2009, "주거용": 560.8, "공공용": 207.0, "서비스업": 1534.1, "농림어업": 893.7, "광업·제조업": 156.7, "제조업": 151.0, "광업": 5.7, "total": 3352.3, "raw": 3352.3}, {"y": 2010, "주거용": 602.7, "공공용": 219.6, "서비스업": 1629.9, "농림어업": 950.2, "광업·제조업": 172.2, "제조업": 165.4, "광업": 6.8, "total": 3574.6, "raw": 3574.6}, {"y": 2011, "주거용": 612.7, "공공용": 226.2, "서비스업": 1674.4, "농림어업": 1010.8, "광업·제조업": 186.0, "제조업": 179.0, "광업": 7.0, "total": 3710.1, "raw": 3710.1}, {"y": 2012, "주거용": 634.2, "공공용": 243.9, "서비스업": 1721.8, "농림어업": 1063.1, "광업·제조업": 201.7, "제조업": 194.7, "광업": 6.9, "total": 3864.6, "raw": 3864.6}, {"y": 2013, "주거용": 658.1, "공공용": 250.5, "서비스업": 1798.8, "농림어업": 1172.8, "광업·제조업": 214.7, "제조업": 207.6, "광업": 7.1, "total": 4094.9, "raw": 4094.9}, {"y": 2014, "주거용": 647.7, "공공용": 246.0, "서비스업": 1855.0, "농림어업": 1253.2, "광업·제조업": 218.2, "제조업": 212.0, "광업": 6.2, "total": 4220.1, "raw": 4094.9}, {"y": 2015, "주거용": 675.6, "공공용": 260.0, "서비스업": 1969.2, "농림어업": 1290.8, "광업·제조업": 233.9, "제조업": 227.7, "광업": 6.3, "total": 4429.6, "raw": 4429.6}, {"y": 2016, "주거용": 735.1, "공공용": 286.7, "서비스업": 2141.8, "농림어업": 1328.8, "광업·제조업": 245.7, "제조업": 238.5, "광업": 7.2, "total": 4738.2, "raw": 7166.7}, {"y": 2017, "주거용": 782.6, "공공용": 301.7, "서비스업": 2308.7, "농림어업": 1364.9, "광업·제조업": 255.6, "제조업": 241.5, "광업": 14.0, "total": 5013.5, "raw": 5013.5}, {"y": 2018, "주거용": 831.1, "공공용": 315.9, "서비스업": 2436.2, "농림어업": 1434.0, "광업·제조업": 255.4, "제조업": 250.9, "광업": 4.6, "total": 5272.6, "raw": 5272.6}, {"y": 2019, "주거용": 851.0, "공공용": 323.9, "서비스업": 2471.5, "농림어업": 1468.2, "광업·제조업": 259.7, "제조업": 255.4, "광업": 4.3, "total": 5374.3, "raw": 5374.3}, {"y": 2020, "주거용": 917.9, "공공용": 316.3, "서비스업": 2457.4, "농림어업": 1399.3, "광업·제조업": 282.4, "제조업": 277.3, "광업": 5.1, "total": 5373.3, "raw": 5373.3}, {"y": 2021, "주거용": 971.5, "공공용": 333.7, "서비스업": 2626.8, "농림어업": 1445.1, "광업·제조업": 310.6, "제조업": 303.1, "광업": 7.5, "total": 5687.7, "raw": 5687.7}, {"y": 2022, "주거용": 1005.3, "공공용": 360.6, "서비스업": 2843.7, "농림어업": 1519.1, "광업·제조업": 316.7, "제조업": 308.8, "광업": 7.9, "total": 6045.4, "raw": 6045.4}, {"y": 2023, "주거용": 1015.8, "공공용": 371.8, "서비스업": 2901.9, "농림어업": 1475.9, "광업·제조업": 312.5, "제조업": 304.6, "광업": 7.9, "total": 6077.9, "raw": 6077.9}, {"y": 2024, "주거용": 1078.6, "공공용": 378.1, "서비스업": 2984.4, "농림어업": 1441.2, "광업·제조업": 314.3, "제조업": 307.0, "광업": 7.3, "total": 6196.6, "raw": 6196.6}, {"y": 2025, "주거용": 1082.0, "공공용": 393.6, "서비스업": 3010.8, "농림어업": 1432.3, "광업·제조업": 311.7, "제조업": 305.1, "광업": 6.6, "total": 6230.4, "raw": 6230.4}], "useNation": [{"y": 2025, "주거용": 85831.7, "공공용": 27922.7, "서비스업": 164066.5, "농림어업": 19362.5, "광업·제조업": 252233.9, "제조업": 250750.2, "광업": 1483.7, "total": 549417.3, "raw": 549417.3}], "mfg": [{"k": "식료품", "v": 113.2}, {"k": "음료", "v": 76.4}, {"k": "화학", "v": 29.5}, {"k": "비금속", "v": 23.6}, {"k": "펄프,종이", "v": 23.2}, {"k": "의료,의약", "v": 10.4}], "voltage": [{"k": "고압", "gwh": 3068.4, "won": 3968.0}, {"k": "저압", "gwh": 3201.4, "won": 4671.0}], "facility": {"wind_sites": 25, "wind_MW": 418.9, "solar_sites": 1653, "solar_MW": 553.7, "permits_by_type": [{"원동력종류": "태양광", "개소": 1653, "설비용량_kW": 553750.0}, {"원동력종류": "풍력", "개소": 25, "설비용량_kW": 374890.0}, {"원동력종류": "바이오가스", "개소": 5, "설비용량_kW": 4739.0}, {"원동력종류": "수력", "개소": 4, "설비용량_kW": 797.0}, {"원동력종류": "소수력", "개소": 1, "설비용량_kW": 30.0}]}, "epsisGen": [{"연도": 2025, "제주_MWh": 4574329.683101}, {"연도": 2024, "제주_MWh": 4681309.0}, {"연도": 2023, "제주_MWh": 4755443.0}], "epsisCap": [{"연도": 2025, "제주": 2078.58795}, {"연도": 2024, "제주": 1941.34487}, {"연도": 2023, "제주": 1920.987}]}</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = s => document.querySelector(s);
+const fmt = (v, d=1) => v==null||isNaN(v) ? '–' : Number(v).toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const f0 = v => fmt(v,0);
+const pct = (a,b,d=1) => fmt(a/b*100,d)+'%';
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs={}, parent) => { const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; };
+const tip = $('#tip');
+function showTip(ev, title, rows){
+  tip.innerHTML = '<div class="t">'+title+'</div>' + rows.map(r=>'<div class="r"><span>'+(r.c?'<i style="background:'+r.c+'"></i>':'')+r.k+'</span><span>'+r.v+'</span></div>').join('');
+  tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + w > window.innerWidth - 8) x = ev.clientX - w - 14;
+  if (y + h > window.innerHeight - 8) y = ev.clientY - h - 14;
+  tip.style.left = Math.max(8,x)+'px'; tip.style.top = Math.max(8,y)+'px';
+}
+const hideTip = () => { tip.hidden = true; };
+function legend(id, items){ $(id).innerHTML = items.map(i=>'<span><i class="'+(i.line?'ln':'')+'" style="background:'+i.c+'"></i>'+i.k+'</span>').join(''); }
+function niceStep(v){ const p=Math.pow(10,Math.floor(Math.log10(v))); const n=v/p; return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p; }
+function niceMax(v,n=4){ const st=niceStep(v/n); return Math.ceil(v/st)*st; }
+function ticks(min,max,count){ const step=niceStep((max-min)/count); const t=[]; for(let v=Math.ceil(min/step)*step; v<=max+1e-9; v+=step) t.push(+v.toFixed(6)); return t; }
+function table(id, head, rows, opts={}){
+  const num = opts.num || head.map((_,i)=>i>0);
+  let h = '<thead><tr>'+head.map((c,i)=>'<th class="'+(num[i]?'n':'')+'">'+c+'</th>').join('')+'</tr></thead><tbody>';
+  rows.forEach(r=>{ h += '<tr class="'+(r._cls||'')+'">' + r.map((c,i)=>'<td class="'+(num[i]?'n':'')+'">'+c+'</td>').join('') + '</tr>'; });
+  $(id).innerHTML = h + '</tbody>';
+}
+
+/* ---------- series definitions (color follows the entity) ---------- */
+const SUP = [
+  {k:'HVDC',  n:'HVDC 수전(육지)', c:'var(--s1)'},
+  {k:'기력',  n:'기력(바이오중유)', c:'var(--s2)'},
+  {k:'복합',  n:'복합(LNG)',       c:'var(--s3)'},
+  {k:'태양광', n:'태양광',          c:'var(--s4)'},
+  {k:'풍력',  n:'풍력',            c:'var(--s5)'},
+  {k:'내연',  n:'내연',            c:'var(--s6)'},
+  {k:'기타',  n:'기타·폐기물',      c:'var(--s7)'}
+];
+const LINES = [
+  {k:'#1', n:'#1 해남–제주', c:'var(--c1)', cap:300},
+  {k:'#2', n:'#2 진도–제주', c:'var(--c2)', cap:400},
+  {k:'#3', n:'#3 완도–동제주', c:'var(--c3)', cap:200}
+];
+const USE = [
+  {k:'주거용', n:'주거용', c:'var(--s1)'},
+  {k:'공공용', n:'업무용·공공', c:'var(--s2)'},
+  {k:'서비스업', n:'업무용·서비스업', c:'var(--s3)'},
+  {k:'농림어업', n:'산업용·농림어업', c:'var(--s4)'},
+  {k:'광업·제조업', n:'산업용·광업·제조업', c:'var(--s5)'}
+];
+
+/* ---------- key figures & answers ---------- */
+const m25 = D.mix.find(r=>r.y===2025), m24 = D.mix.find(r=>r.y===2024);
+const u25 = D.useJeju.find(r=>r.y===2025), un = D.useNation[0];
+const hv25 = D.hvdcYear.find(r=>r.y===2025);
+const dm25 = D.demand.find(r=>r.y===2025);
+const renew25 = m25['태양광']+m25['풍력']+ 10.1; // 기타 재생(바이오·소수력 등) 10.1 GWh
+$('#figs').innerHTML = [
+  {k:'2025년 총 공급', v:fmt(m25.total), u:'GWh', d:'자체발전 + HVDC 순수전'},
+  {k:'자체 발전', v:fmt(m25.self), u:'GWh', d:pct(m25.self,m25.total)+' · 전년 대비 '+fmt((m25.self/m24.self-1)*100)+'%'},
+  {k:'육지 수전(HVDC)', v:fmt(m25.HVDC), u:'GWh', d:'공급의 '+fmt(m25.share)+'% · 3회선'},
+  {k:'판매전력량(소비)', v:fmt(u25.total), u:'GWh', d:'업무용 '+pct(u25['공공용']+u25['서비스업'],u25.total,0)+' · 산업용 '+pct(u25['농림어업']+u25['광업·제조업'],u25.total,0)},
+  {k:'최대전력', v:'1,141', u:'MW', d:'2025-08-26 18시 · 공급능력 1,637MW'}
+].map(f=>'<div class="fig"><div class="k">'+f.k+'</div><div class="v num">'+f.v+'<small>'+f.u+'</small></div><div class="d">'+f.d+'</div></div>').join('');
+
+$('#ans-gen').innerHTML = '2025년 제주 섬 안의 발전소가 만든 전력은 <strong>'+fmt(m25.self)+' GWh</strong>로, HVDC를 포함한 전체 공급 '+fmt(m25.total)+' GWh의 <strong>'+pct(m25.self,m25.total)+'</strong>입니다. 발전설비는 2,147MW이며, 화력(기력·복합·내연) '+fmt(m25['기력']+m25['복합']+m25['내연'])+' GWh와 재생에너지(풍력·태양광·기타) 약 '+fmt(renew25)+' GWh(공급의 24.3%)로 나뉩니다.';
+$('#ans-mix').innerHTML = '2025년 발전원별로는 복합(LNG) '+fmt(m25['복합'])+', 기력(바이오중유) '+fmt(m25['기력'])+', <strong>태양광 '+fmt(m25['태양광'])+'</strong>, <strong>풍력 '+fmt(m25['풍력'])+' GWh</strong> 순입니다. PPA 포함 기준으로 2021년보다 태양광은 '+fmt((m25['태양광']/572.9-1)*100,0)+'%, 풍력은 '+fmt((m25['풍력']/538.6-1)*100,0)+'% 늘었고, 내연 발전은 2019년 265.5 GWh에서 '+fmt(m25['내연'])+' GWh로 줄었습니다.';
+const hvShare = hv25['#2'].net/m25.HVDC;
+$('#ans-import').innerHTML = '2025년 육지에서 해저 연계선으로 받은 순전력은 <strong>'+fmt(m25.HVDC)+' GWh</strong>로 제주 전체 공급의 <strong>'+fmt(m25.share)+'%</strong>입니다. 2021년 1,621 GWh(26.6%)에서 매년 늘었고, 제3연계선이 가세한 2025년에는 동시 수전 최대치가 '+f0(D.hvdcTotal['2025'].peak)+' MW까지 올라갔습니다.';
+$('#ans-cable').innerHTML = '제주와 육지 사이에는 <strong>HVDC 해저 연계선 3회선</strong>(정격 합계 900MW)이 있습니다. 2025년 순수전량은 <strong>#2 진도–제주 '+fmt(hv25['#2'].net)+' GWh</strong>('+pct(hv25['#2'].net,m25.HVDC,0)+'), <strong>#3 완도–동제주 '+fmt(hv25['#3'].net)+' GWh</strong>, <strong>#1 해남–제주 '+fmt(hv25['#1'].net)+' GWh</strong>입니다. #1은 받은 전력 '+fmt(hv25['#1'].in)+' GWh 가운데 '+fmt(hv25['#1'].out)+' GWh를 다시 육지로 보냈습니다(역송 '+f0(hv25['#1'].rev_h)+'시간). 봄·가을 낮 재생에너지가 남을 때 역송 통로로 쓰이고 있습니다.';
+const bizJ = (u25['공공용']+u25['서비스업'])/u25.total, bizN = (un['공공용']+un['서비스업'])/un.total;
+$('#ans-use').innerHTML = '2025년 제주 판매전력량은 <strong>'+fmt(u25.total)+' GWh</strong>(전국의 '+pct(u25.total,un.total,2)+')입니다. <strong>업무용이 '+fmt(bizJ*100)+'%</strong>로 전국('+fmt(bizN*100)+'%)보다 훨씬 크고, 이 중 서비스업이 '+fmt(u25['서비스업'])+' GWh입니다. 산업용은 '+pct(u25['농림어업']+u25['광업·제조업'],u25.total)+'인데 대부분이 <strong>농림어업('+fmt(u25['농림어업'])+' GWh, '+pct(u25['농림어업'],u25.total)+')</strong>이며 전국 비중 '+pct(un['농림어업'],un.total)+'의 6배가 넘습니다. 주거용은 '+fmt(u25['주거용'])+' GWh('+pct(u25['주거용'],u25.total)+')입니다.';
+
+/* ---------- 2025 source table ---------- */
+const PLANT = {HVDC:'#1 해남·#2 진도·#3 완도 연계선', 기력:'제주기력·남제주기력', 복합:'제주복합·한림복합·남제주복합', 태양광:'허가 1,653개소 554MW + PPA·BTM', 풍력:'허가 25개소 375MW', 내연:'제주내연 #1·#2', 기타:'폐기물 19MW · 바이오·소수력 등 6MW'};
+const CAP = {HVDC:'600 (정격 900)', 기력:'350', 복합:'493', 태양광:'777', 풍력:'422', 내연:'80', 기타:'25'};
+const UTIL = {HVDC:'–', 기력:'44.1', 복합:'34.9', 태양광:'13.9*', 풍력:'21.4', 내연:'1.7', 기타:'–'};
+const rows25 = SUP.map(s=>['<span class="sw" style="background:'+s.c+'"></span>'+s.n, PLANT[s.k], fmt(m25[s.k]), fmt(m24[s.k]), fmt((m25[s.k]/m24[s.k]-1)*100), pct(m25[s.k],m25.total), CAP[s.k], UTIL[s.k]]);
+const self = ['자체 발전 소계', '', fmt(m25.self), fmt(m24.self), fmt((m25.self/m24.self-1)*100), pct(m25.self,m25.total), '2,147', '']; self._cls='sum';
+const all = ['합계(공급)', '', fmt(m25.total), fmt(m24.total), fmt((m25.total/m24.total-1)*100), '100.0%', '', '']; all._cls='sum';
+table('#tbl-2025', ['구분','주요 설비','2025 GWh','2024 GWh','증감 %','비중','설비 MW','이용률 %'], [...rows25, self, all], {num:[0,0,1,1,1,1,1,1]});
+
+/* ---------- stacked columns ---------- */
+const W_ = host => Math.max(300, Math.round($(host).clientWidth || 700));
+const H_ = (W, h) => Math.round(Math.max(220, Math.min(h||300, W*0.62)));
+function stackedCols(host, cats, series, getV, opts){
+  $(host).innerHTML='';
+  const W=W_(host), H=H_(W,opts.h), m={t:22,r:8,b:26,l:46};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const totals = cats.map(c=>series.reduce((s,se)=>s+Math.max(0,getV(c,se)||0),0));
+  const max = niceMax(Math.max(...totals)*1.08);
+  const svg = el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':opts.aria});
+  const y = v => m.t + ih - v/max*ih;
+  ticks(0,max,4).forEach(t=>{ el('line',{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),class:t===0?'axis':'grid'},svg); const tx=el('text',{x:m.l-8,y:y(t)+4,'text-anchor':'end'},svg); tx.textContent=t.toLocaleString('ko-KR'); });
+  const band = iw/cats.length, bw = Math.min(opts.bw||40, band*0.62);
+  cats.forEach((c,i)=>{
+    const cx = m.l + band*i + band/2; let acc=0;
+    const segs = series.map(se=>({se, v:getV(c,se)||0})).filter(s=>s.v>0);
+    segs.forEach((s,j)=>{
+      const y0=y(acc), y1=y(acc+s.v); acc+=s.v;
+      const top = j===segs.length-1;
+      const hgt = Math.max(0, y0-y1 - (top?0:2));
+      if(top){ const r=Math.min(3,hgt); el('path',{d:`M${cx-bw/2},${y0} V${y1+r} Q${cx-bw/2},${y1} ${cx-bw/2+r},${y1} H${cx+bw/2-r} Q${cx+bw/2},${y1} ${cx+bw/2},${y1+r} V${y0} Z`,style:'fill:'+s.se.c},svg); }
+      else el('rect',{x:cx-bw/2,y:y1+2,width:bw,height:hgt,style:'fill:'+s.se.c},svg);
+    });
+    const tl = el('text',{x:cx,y:y(totals[i])-6,'text-anchor':'middle',class:'lbl'},svg);
+    tl.textContent = opts.totalFmt ? opts.totalFmt(c,totals[i]) : fmt(totals[i],0);
+    const narrow = band < 36;
+    if ((opts.skipTotal && opts.skipTotal(i)) || (!opts.skipTotal && narrow && (i%2)!==((cats.length-1)%2))) tl.remove();
+    const xl = el('text',{x:cx,y:H-8,'text-anchor':'middle'},svg); xl.textContent = opts.xLabel ? opts.xLabel(c,i) : (narrow && String(c).length===4 ? "'"+String(c).slice(2) : c);
+    const hit = el('rect',{x:m.l+band*i,y:m.t,width:band,height:ih,class:'hit'},svg);
+    const tot = opts.totalOf ? opts.totalOf(c) : totals[i];
+    hit.addEventListener('pointermove',ev=>showTip(ev, opts.tipTitle?opts.tipTitle(c):c, [...series].reverse().filter(se=>getV(c,se)!=null).map(se=>({k:se.n,v:fmt(getV(c,se))+' '+opts.unit,c:se.c})).concat([{k:'합계',v:fmt(tot)+' '+opts.unit}])));
+    hit.addEventListener('pointerleave',hideTip);
+  });
+  $(host).appendChild(svg);
+}
+
+// C1 supply mix
+legend('#lg-mix', SUP.map(s=>({k:s.n,c:s.c})));
+const drawMix = () => stackedCols('#ch-mix', D.mix.map(r=>r.y), SUP, (y,se)=>D.mix.find(r=>r.y===y)[se.k], {unit:'GWh', aria:'제주 전력 공급원 구성 2019-2025 누적 막대', tipTitle:y=>y+'년 공급 구성', totalOf:y=>D.mix.find(r=>r.y===y).total, totalFmt:(y)=>fmt(D.mix.find(r=>r.y===y).total,0)});
+table('#tv-mix', ['연도',...SUP.map(s=>s.n),'합계','자체발전','HVDC 비중'], D.mix.map(r=>[r.y,...SUP.map(s=>fmt(r[s.k])),fmt(r.total),fmt(r.self),fmt(r.share)+'%']));
+
+// C2 HVDC yearly per line (2016-2025)
+const hvY = D.hvdcYear.filter(r=>r.y<=2025);
+legend('#lg-hv', LINES.map(s=>({k:s.n,c:s.c})));
+const drawHv = () => stackedCols('#ch-hv', hvY.map(r=>r.y), LINES, (y,se)=>{ const r=hvY.find(q=>q.y===y)[se.k]; return r? r.net : null; }, {unit:'GWh', aria:'HVDC 연계선별 연간 순수전량', tipTitle:y=>y+'년 순수전량', h:280});
+table('#tv-hv', ['연도',...LINES.map(s=>s.n),'합계','최대 동시수전 MW'], D.hvdcYear.map(r=>[r.y+(r.y===2026?' 상반기':''),...LINES.map(s=>r[s.k]?fmt(r[s.k].net):'–'),fmt(D.hvdcTotal[r.y].net),f0(D.hvdcTotal[r.y].peak)]));
+
+// spec table
+table('#tbl-spec', ['','구간','운전','방식·전압','정격','해저 길이'], [
+  ['<span class="pill">#1</span>','해남–제주','1998.3','LCC ±180kV','150MW×2','101km×2'],
+  ['<span class="pill">#2</span>','진도–서제주','2014.4','LCC ±250kV','200MW×2','101.4km'],
+  ['<span class="pill">#3</span>','완도–동제주','2024.12','VSC ±150kV','200MW','98km']
+], {num:[0,0,0,0,1,1]});
+
+// per-line table (2025 + 2026H1 + 2024)
+const lineRows = [];
+[2025, 2026, 2024].forEach(y=>{
+  const r = D.hvdcYear.find(q=>q.y===y);
+  LINES.forEach(s=>{ const v=r[s.k]; if(!v) return;
+    const util = v.net/(s.cap*v.hours)*1000*100;
+    lineRows.push([(y===2026?'2026 상반기':y), '<span class="sw" style="background:'+s.c+'"></span>'+s.n, fmt(v.in), '<span class="'+(v.out>0.5?'neg':'')+'">'+fmt(Math.abs(v.out))+'</span>', fmt(v.net), pct(v.net, D.hvdcTotal[y].net,1), f0(v.max), f0(v.rev_h), fmt(util)]);
+  });
+});
+table('#tbl-line', ['연도','연계선','수전량','역송량','순수전량','비중','최대 수전 MW','역송 시간','이용률 %'], lineRows, {num:[0,0,1,1,1,1,1,1,1]});
+
+/* ---------- C3 monthly lines ---------- */
+legend('#lg-mo', LINES.map(s=>({k:s.n,c:s.c,line:true})));
+table('#tv-mo', ['월',...LINES.map(s=>s.n),'합계'], D.hvdcMonth.map(r=>[r.ym,...LINES.map(s=>'<span class="'+(r[s.k]<0?'neg':'')+'">'+fmt(r[s.k])+'</span>'),fmt(r['#1']+r['#2']+r['#3'])]));
+function drawMo(){
+  $('#ch-mo').innerHTML='';
+  const rows = D.hvdcMonth, W=W_('#ch-mo'), H=H_(W,280), m={t:16,r:14,b:30,l:40}, iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const vals = rows.flatMap(r=>LINES.map(s=>r[s.k]));
+  const lo = Math.min(0, ...vals), hi = Math.max(...vals);
+  const mn = Math.floor(lo/50)*50, mx = Math.ceil(hi/50)*50;
+  const y = v => m.t + (mx - v)/(mx - mn)*ih; const x = i => m.l + i*(iw/(rows.length-1));
+  const svg = el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'연계선별 월간 순수전량 선그래프'});
+  ticks(mn,mx,4).forEach(t=>{ el('line',{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),class:t===0?'zero':'grid'},svg); const tx=el('text',{x:m.l-8,y:y(t)+4,'text-anchor':'end'},svg); tx.textContent=t; });
+  const every = W < 420 ? 6 : 3;
+  rows.forEach((r,i)=>{ if(i%every===0){ const tx=el('text',{x:x(i),y:H-10,'text-anchor':i===0?'start':'middle'},svg); tx.textContent=r.ym.replace('20',"'"); } });
+  LINES.forEach(s=>{
+    el('path',{d:rows.map((r,i)=>(i?'L':'M')+x(i)+','+y(r[s.k])).join(' '),style:'fill:none;stroke:'+s.c+';stroke-width:2;stroke-linejoin:round;stroke-linecap:round'},svg);
+    const li=rows.length-1; el('circle',{cx:x(li),cy:y(rows[li][s.k]),r:4,style:'fill:'+s.c+';stroke:var(--surface);stroke-width:2'},svg);
+  });
+  const cross = el('line',{y1:m.t,y2:m.t+ih,class:'grid',style:'visibility:hidden'},svg);
+  const hit = el('rect',{x:m.l,y:m.t,width:iw,height:ih,class:'hit'},svg);
+  hit.addEventListener('pointermove',ev=>{ const bb=svg.getBoundingClientRect(); const px=(ev.clientX-bb.left)/bb.width*W; const i=Math.max(0,Math.min(rows.length-1,Math.round((px-m.l)/(iw/(rows.length-1))))); cross.setAttribute('x1',x(i)); cross.setAttribute('x2',x(i)); cross.style.visibility='visible'; const r=rows[i];
+    showTip(ev, r.ym+' 순수전량', LINES.map(s=>({k:s.n,v:fmt(r[s.k])+' GWh',c:s.c})).concat([{k:'합계',v:fmt(r['#1']+r['#2']+r['#3'])+' GWh'}])); });
+  hit.addEventListener('pointerleave',()=>{hideTip(); cross.style.visibility='hidden';});
+  $('#ch-mo').appendChild(svg);
+}
+
+/* ---------- C4 hourly stacked area ---------- */
+const HS = [
+    {k:'HVDC',n:'HVDC 수전',c:'var(--s1)'},{k:'기력',n:'바이오중유(기력)',c:'var(--s2)'},{k:'복합',n:'LNG(복합)',c:'var(--s3)'},
+    {k:'태양광',n:'태양광(시장)',c:'var(--s4)'},{k:'재생E',n:'풍력·입찰 재생E',c:'var(--s5)'},{k:'기타',n:'기타·폐기물',c:'var(--s7)'}
+  ];
+legend('#lg-hr', HS.map(s=>({k:s.n,c:s.c})).concat([{k:'계통수요',c:'var(--ink)',line:true}]));
+table('#tv-hr', ['시','계통수요',...HS.map(s=>s.n)], D.hourly.map(r=>[r.h+'시',f0(r.demand),...HS.map(s=>f0(r[s.k]))]));
+function drawHr(){
+  $('#ch-hr').innerHTML='';
+  const rows = D.hourly, W=W_('#ch-hr'), H=H_(W,280), m={t:18,r:14,b:30,l:40}, iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const mx = niceMax(Math.max(...rows.map(r=>r.demand))*1.05);
+  const y = v => m.t + ih - v/mx*ih; const x = i => m.l + i*(iw/(rows.length-1));
+  const svg = el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'2025년 시간대별 평균 공급 구성 누적 면적'});
+  ticks(0,mx,4).forEach(t=>{ el('line',{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),class:t===0?'axis':'grid'},svg); const tx=el('text',{x:m.l-8,y:y(t)+4,'text-anchor':'end'},svg); tx.textContent=t.toLocaleString('ko-KR'); });
+  rows.forEach((r,i)=>{ if(r.h%3===0){ const tx=el('text',{x:x(i),y:H-10,'text-anchor':'middle'},svg); tx.textContent=r.h+'시'; } });
+  const base = rows.map(()=>0);
+  HS.forEach(s=>{
+    const top = rows.map((r,i)=>base[i]+(r[s.k]||0));
+    const d = rows.map((r,i)=>(i?'L':'M')+x(i)+','+y(top[i])).join(' ') + ' ' + rows.map((r,i)=>'L'+x(rows.length-1-i)+','+y(base[rows.length-1-i])).join(' ') + ' Z';
+    el('path',{d,style:'fill:'+s.c+';stroke:var(--surface);stroke-width:1.5;stroke-linejoin:round'},svg);
+    top.forEach((v,i)=>base[i]=v);
+  });
+  el('path',{d:rows.map((r,i)=>(i?'L':'M')+x(i)+','+y(r.demand)).join(' '),style:'fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round'},svg);
+  const li = rows.findIndex(r=>r.h===20); const dl=el('text',{x:x(li),y:y(rows[li].demand)-8,'text-anchor':'middle',class:'lbl'},svg); dl.textContent='계통수요 '+f0(rows[li].demand)+'MW';
+  const cross = el('line',{y1:m.t,y2:m.t+ih,class:'zero',style:'visibility:hidden'},svg);
+  const hit = el('rect',{x:m.l,y:m.t,width:iw,height:ih,class:'hit'},svg);
+  hit.addEventListener('pointermove',ev=>{ const bb=svg.getBoundingClientRect(); const px=(ev.clientX-bb.left)/bb.width*W; const i=Math.max(0,Math.min(rows.length-1,Math.round((px-m.l)/(iw/(rows.length-1))))); cross.setAttribute('x1',x(i)); cross.setAttribute('x2',x(i)); cross.style.visibility='visible'; const r=rows[i];
+    showTip(ev, r.h+'시 평균(2025)', [{k:'계통수요',v:f0(r.demand)+' MW'}].concat([...HS].reverse().map(s=>({k:s.n,v:f0(r[s.k])+' MW',c:s.c})))); });
+  hit.addEventListener('pointerleave',()=>{hideTip(); cross.style.visibility='hidden';});
+  $('#ch-hr').appendChild(svg);
+}
+
+/* ---------- C5 100% bars ---------- */
+legend('#lg-share', USE.map(s=>({k:s.n,c:s.c})));
+function drawShare(){
+  $('#ch-share').innerHTML='';
+  const bars = [{n:'제주 2025', r:u25},{n:'전국 2025', r:un}];
+  const W=W_('#ch-share'), rowH=34, gap=22, m={t:6,l:78,r:8}, H=m.t+bars.length*(rowH+gap);
+  const iw=W-m.l-m.r;
+  const svg = el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'용도별 판매전력량 구성 비교'});
+  bars.forEach((b,bi)=>{
+    const y0 = m.t + bi*(rowH+gap); let acc=0;
+    const lb=el('text',{x:m.l-10,y:y0+rowH/2+4,'text-anchor':'end',class:'lbl'},svg); lb.textContent=b.n;
+    USE.forEach((s,si)=>{
+      const v=b.r[s.k], w=v/b.r.total*iw, x0=m.l+acc/b.r.total*iw; acc+=v;
+      const last = si===USE.length-1;
+      el('rect',{x:x0,y:y0,width:Math.max(0,w-(last?0:2)),height:rowH,rx:last?3:0,style:'fill:'+s.c},svg);
+      const p = v/b.r.total*100;
+      if (w > 46){ const t=el('text',{x:x0+w/2-1,y:y0+rowH/2+4,'text-anchor':'middle',style:'font-weight:600;fill:#0b0b0b'},svg); t.textContent=fmt(p)+'%'; }
+      const hit = el('rect',{x:x0,y:y0-4,width:Math.max(w,6),height:rowH+8,class:'hit'},svg);
+      hit.addEventListener('pointermove',ev=>showTip(ev,b.n+' · '+s.n,[{k:'판매량',v:fmt(v)+' GWh',c:s.c},{k:'비중',v:fmt(p)+'%'}]));
+      hit.addEventListener('pointerleave',hideTip);
+    });
+  });
+  $('#ch-share').appendChild(svg);
+}
+
+// C6 use trend
+legend('#lg-use', USE.map(s=>({k:s.n,c:s.c})));
+const drawUse = () => stackedCols('#ch-use', D.useJeju.map(r=>r.y), USE, (y,se)=>D.useJeju.find(r=>r.y===y)[se.k], {unit:'GWh', aria:'제주 용도별 판매전력량 추이', bw:18, h:300,
+  xLabel:(y,i)=> (y%4===3||y===2025)? "'"+String(y).slice(2) : '', totalFmt:(y,t)=>fmt(t,0), skipTotal:i=>!(i%4===0||i===D.useJeju.length-1), tipTitle:y=>y+'년 판매전력량'});
+table('#tv-use', ['연도',...USE.map(s=>s.n),'합계(재계산)','원자료 합계'], D.useJeju.map(r=>[r.y,...USE.map(s=>fmt(r[s.k])),fmt(r.total),'<span class="'+(Math.abs(r.raw-r.total)>1?'neg':'')+'">'+fmt(r.raw)+'</span>']));
+
+table('#tbl-use25', ['용도','제주','비중','전국 비중'], [
+  ['주거용', fmt(u25['주거용']), pct(u25['주거용'],u25.total), pct(un['주거용'],un.total)],
+  ['업무용 계', fmt(u25['공공용']+u25['서비스업']), pct(u25['공공용']+u25['서비스업'],u25.total), pct(un['공공용']+un['서비스업'],un.total)],
+  ['　공공용', fmt(u25['공공용']), pct(u25['공공용'],u25.total), pct(un['공공용'],un.total)],
+  ['　서비스업', fmt(u25['서비스업']), pct(u25['서비스업'],u25.total), pct(un['서비스업'],un.total)],
+  ['산업용 계', fmt(u25['농림어업']+u25['광업·제조업']), pct(u25['농림어업']+u25['광업·제조업'],u25.total), pct(un['농림어업']+un['광업·제조업'],un.total)],
+  ['　농림어업', fmt(u25['농림어업']), pct(u25['농림어업'],u25.total), pct(un['농림어업'],un.total)],
+  ['　광업', fmt(u25['광업']), pct(u25['광업'],u25.total), pct(un['광업'],un.total)],
+  ['　제조업', fmt(u25['제조업']), pct(u25['제조업'],u25.total), pct(un['제조업'],un.total)],
+  Object.assign(['합계', fmt(u25.total), '100.0%', '100.0%'],{_cls:'sum'})
+], {num:[0,1,1,1]});
+table('#tbl-mfg', ['업종','GWh','제조업 중'], D.mfg.map(r=>[r.k, fmt(r.v), pct(r.v,u25['제조업'])]), {num:[0,1,1]});
+const vt = D.voltage.reduce((s,r)=>s+r.gwh,0);
+table('#tbl-volt', ['공급전압','판매량 GWh','비중','판매수입 억원'], D.voltage.map(r=>[r.k, fmt(r.gwh), pct(r.gwh,vt), f0(r.won)]), {num:[0,1,1,1]});
+table('#tbl-dem', ['연도','수요량 GWh','최대전력 MW','최대 발생','평균 MW','최저 MW'], D.demand.filter(r=>r.y>=2015).map(r=>[r.y+(r.y===2026?' 상반기':''), fmt(r.gwh), f0(r.peak), r.when, f0(r.avg), f0(r.min)]), {num:[0,1,1,0,1,1]});
+
+function renderAll(){ drawMix(); drawHv(); drawMo(); drawHr(); drawShare(); drawUse(); }
+renderAll();
+let lastW = window.innerWidth, rt;
+window.addEventListener('resize', ()=>{ if (window.innerWidth===lastW) return; lastW=window.innerWidth; clearTimeout(rt); rt=setTimeout(renderAll,150); });
+
+/* ---------- sources ---------- */
+const DG = pk => 'https://www.data.go.kr/data/'+pk+'/fileData.do';
+const SRC = [
+  ['S01','한국전력거래소_제주발전기 연료원 시간대별 전력거래량','2010–2025 시간별 · MWh','공공데이터포털',DG('15161308'),'01_발전량_연료원별',1],
+  ['S02','한국전력거래소_제주지역 연료원별 시간대별 발전량','2025 시간별 · LNG·바이오중유·태양광·풍력','공공데이터포털',DG('15138838'),'01_발전량_연료원별',1],
+  ['S05','한국전력거래소_제주 월별 연료원별 전력거래량','2011–2021 월별','공공데이터포털',DG('15108099'),'01_발전량_연료원별',1],
+  ['S08','한국전력거래소_제주지역 태양광_풍력 시간대별 발전량','2019.12–2023 시간별','공공데이터포털',DG('15127502'),'01_발전량_연료원별',1],
+  ['S12','EPSIS 발전량 › 지역별','2002–2025 연간 · 시도별','전력통계정보시스템','https://epsis.kpx.or.kr/epsisnew/selectEkgeGepGbaChart.do?menuId=060104','01_발전량_연료원별',1],
+  ['S03','한국전력거래소_제주 일별 시간대별 연계선 수전전력(HVDC)','2016–2026.6 시간별 · #1·#2·#3','공공데이터포털',DG('15100403'),'02_HVDC_해저연계선',1],
+  ['D01','한국전력거래소_시간별 제주전력수요','2007–2026.6 시간별 · MW','공공데이터포털',DG('15065239'),'03_전력수요_수급',1],
+  ['S04','한국전력거래소_제주 전력수급현황','2023.9–2026.6 시간별 · 공급능력·예비력','공공데이터포털',DG('15125113'),'03_전력수요_수급',1],
+  ['D02','EPSIS 판매전력량 › 시도별 용도별','2003–2025 연간 · 주거·업무·산업 세부','전력통계정보시스템','https://epsis.kpx.or.kr/epsisnew/selectEksaAscAsaChart.do?menuId=060405','04_전력소비_용도별',1],
+  ['D03','한국전력공사_시도별 공급전압별 판매실적','2025 월별 · 고압·저압','공공데이터포털',DG('15119478'),'04_전력소비_용도별',1],
+  ['D06','제주특별자치도_최종 에너지 소비량 정보','2010–2019 연간 · 천TOE','공공데이터포털',DG('15096858'),'04_전력소비_용도별',1],
+  ['S13','EPSIS 발전설비 › 지역별','2002–2025 연간 · MW','전력통계정보시스템','https://epsis.kpx.or.kr/epsisnew/selectEkfaFclFbaChart.do?menuId=020704','05_발전설비_신재생_출력제어',1],
+  ['S09','제주특별자치도_풍력발전현황','2024.12 기준 · 발전소별','공공데이터포털',DG('15047557'),'05_발전설비_신재생_출력제어',1],
+  ['S10','제주특별자치도_태양광발전소현황','2024.12 기준 · 발전소별','공공데이터포털',DG('3082724'),'05_발전설비_신재생_출력제어',1],
+  ['S11','제주특별자치도_신재생에너지발전시설현황(발전사업 허가)','2024.12 기준','공공데이터포털',DG('15062347'),'05_발전설비_신재생_출력제어',1],
+  ['S06','한국전력공사_제주지역 PPA 발전량','2022.12–2024.6 월별','공공데이터포털',DG('15100272'),'05_발전설비_신재생_출력제어',1],
+  ['S07','한국전력거래소_시간별 제주 태양광 풍력 제어량 및 제어횟수','2015–2024.6','공공데이터포털',DG('15108268'),'05_발전설비_신재생_출력제어',1],
+  ['R01','전력거래소 연간 제주지역 전력계통 운영실적(11개 연도)','2015–2025 · PDF/HWP','전력거래소','https://www.kpx.or.kr/board.es?mid=a10102090000&bid=0159','06_KPX_제주계통운영실적_연간보고서',1],
+  ['—','한전 시군구별 전력판매량(계약종별·용도업종별)','월별 엑셀 · 설문 후 다운로드','한국전력공사','https://www.kepco.co.kr/home/customer/library/electricity-statistics/sales-volume/boardList.do','',0],
+  ['—','한전 전력데이터 개방포털 · 지역별 용도별 전력사용량','로그인 후 다운로드','한국전력공사','https://bigdata.kepco.co.kr/cmsmain.do?scode=S01&pcode=000167','',0],
+  ['—','전력거래소 제주 실시간 전력수급','실시간 화면','전력거래소','https://www.kpx.or.kr/chejusukub.do','',0]
+];
+table('#tbl-src', ['코드','데이터','범위·단위','제공','원본 링크','저장 폴더'], SRC.map(s=>[s[0], s[1], s[2], s[3], '<a href="'+s[4]+'" target="_blank" rel="noopener">'+s[4].replace('https://','')+'</a>', s[6]?'<span class="mono" style="font-size:12px">'+s[5]+'</span>':'<span class="tag-dl tag-no">링크만</span>']), {num:[0,0,0,0,0,0]});
+const RPT = [['2025','76777'],['2024','74566'],['2023','71928'],['2022','69943'],['2021','68175'],['2020','66549'],['2019','66528'],['2018','66515'],['2017','66502'],['2016','66486'],['2015','66479']];
+$('#tbl-src').insertAdjacentHTML('afterend','<p class="note" style="margin-top:10px">R01 연도별 게시물: '+RPT.map(r=>'<a href="https://www.kpx.or.kr/board.es?mid=a10102090000&bid=0159&act=view&list_no='+r[1]+'" target="_blank" rel="noopener">'+r[0]+'</a>').join(' · ')+' · 연계선 규격 기사: <a href="http://www.epnews.co.kr/news/articleView.html?idxno=39559" target="_blank" rel="noopener">#2 한국전력신문</a> · <a href="https://www.electimes.com/news/articleView.html?idxno=66851" target="_blank" rel="noopener">#1 전기신문</a> · <a href="https://www.epj.co.kr/news/articleView.html?idxno=35487" target="_blank" rel="noopener">#3 일렉트릭파워</a> · <a href="https://www.electimes.com/news/articleView.html?idxno=347261" target="_blank" rel="noopener">#3 전기신문</a></p>');
+
+table('#tbl-proc', ['파일','내용'], [
+  ['KPX_연간보고서_발전원별실적_MWh_2019-2025.csv','보고서 표 전사 · 발전원별·HVDC·자체발전'],
+  ['발전_연료원별_연간전력거래량_MWh_2010-2025.csv','S01 연간 합계 · 연료원별'],
+  ['HVDC_연도별_연계선별_수전량.csv','연계선별 수전·역송·순수전·최대·역송시간'],
+  ['HVDC_월별_연계선별_순수전량_MWh.csv','2016.1–2026.6 월별'],
+  ['HVDC_시간별_연계선별_MW_2016-2026H1.csv','시간별 통합본(단위 MW로 통일)'],
+  ['수요_연도별_요약.csv','연간 수요량·최대·평균·최저'],
+  ['수요_시간별_계통수요_MW_2007-2026H1.csv','시간별 통합본'],
+  ['수급_2025_시간별_수요_HVDC_발전원.csv','2025 시간별 수요·연계선·발전원'],
+  ['수급_2025_월별_GWh.csv / 수급_2025_시간대평균_MW.csv','2025 월별·시간대 평균'],
+  ['소비_제주_용도별_판매전력량_MWh_2003-2025.csv','제주 용도별(합계 재계산 포함)'],
+  ['소비_시도별_용도별_판매전력량_MWh_2003-2025.csv','17개 시도 + 전국'],
+  ['소비_제주_공급전압별_연간판매량.csv','고압·저압'],
+  ['설비_발전사업허가_원동력별.csv','허가 설비 원동력별 개소·용량'],
+  ['summary.json','이 페이지에 쓴 요약값']
+], {num:[0,0]});
+})();
+</script>
